@@ -27,13 +27,16 @@ export function getCurrentMonth(): string {
   })
 }
 
-export function calculateMonthlyStats(gastos: any[], ingresos: any[]) {
+import type { Gasto, Ingreso } from "@/app/types/types"
+
+export function calculateMonthlyStats(gastos: Gasto[], ingresos: Ingreso[]) {
   const totalGastos = gastos.reduce((acc, gasto) => acc + gasto.monto, 0)
   const totalIngresos = ingresos.reduce((acc, ingreso) => acc + ingreso.monto, 0)
   const balance = totalIngresos - totalGastos
 
   const gastosPorCategoria = gastos.reduce((acc: Record<string, number>, gasto) => {
-    acc[gasto.categoria] = (acc[gasto.categoria] || 0) + gasto.monto
+    const key = String(gasto.categoriaId)
+    acc[key] = (acc[key] || 0) + gasto.monto
     return acc
   }, {})
 

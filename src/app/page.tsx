@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { formatCurrency, getCurrentMonth, calculateMonthlyStats } from "@/lib/utils"
+import { formatCurrency, calculateMonthlyStats } from "@/lib/utils"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { Gasto, Tarjeta } from "@/app/types/types"
 
@@ -191,7 +191,7 @@ export default function Home() {
             <Card>
               <CardContent className="pt-6">
                 <p className="text-center text-muted-foreground">
-                  No hay tarjetas registradas. Ve a la sección "Tarjetas" para agregar tarjetas de crédito.
+                  No hay tarjetas registradas. Ve a la sección &quot;Tarjetas&quot; para agregar tarjetas de crédito.
                 </p>
               </CardContent>
             </Card>

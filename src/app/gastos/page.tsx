@@ -5,14 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Plus, Pencil, Trash, CreditCard } from "lucide-react"
+import { MoreHorizontal, Plus, Pencil, Trash } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
-import type { Gasto, Tarjeta, MedioPago } from "../types/types"
+import type { Gasto, MedioPago } from "../types/types"
 import { useTarjetas } from "@/app/context/TarjetasContext"
 import { useCategorias } from "@/app/context/CategoriasContext"
-import { EmojiPicker } from "@/components/EmojiPicker"
 
 export default function GastosPage() {
   const { tarjetas, actualizarSaldosTarjetas } = useTarjetas()
@@ -48,7 +47,7 @@ export default function GastosPage() {
     if (gastos.length > 0) {
       actualizarSaldosTarjetas(gastos)
     }
-  }, [gastos])
+  }, [gastos, actualizarSaldosTarjetas])
 
   const resetForm = () => {
     setNuevoGasto({

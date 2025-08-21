@@ -4,8 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, Plus, Pencil, Trash, CreditCard } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
@@ -62,13 +61,13 @@ export default function TarjetasPage() {
       }))
       tarjetasIniciales.forEach(t => agregarTarjeta(t))
     }
-  }, [])
+  }, [agregarTarjeta, tarjetas.length])
 
   useEffect(() => {
     if (gastos.length > 0) {
       actualizarSaldosTarjetas(gastos)
     }
-  }, [gastos])
+  }, [gastos, actualizarSaldosTarjetas])
 
   const resetForm = () => {
     setNuevaTarjeta({
