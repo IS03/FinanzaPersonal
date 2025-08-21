@@ -31,7 +31,23 @@ export default function DeudasPage() {
 
   useEffect(() => {
     const savedDeudas = JSON.parse(localStorage.getItem('deudas') || '[]')
-    const cleanedDeudas = cleanDuplicateData(savedDeudas)
+    
+    // Validar deudas
+    const validDeudas = savedDeudas.filter((deuda: unknown) => 
+      deuda && typeof deuda === 'object' && 
+      deuda !== null &&
+      'id' in deuda && typeof (deuda as Record<string, unknown>).id === 'number' &&
+      'descripcion' in deuda && typeof (deuda as Record<string, unknown>).descripcion === 'string' &&
+      'monto' in deuda && typeof (deuda as Record<string, unknown>).monto === 'number' &&
+      'montoPagado' in deuda && typeof (deuda as Record<string, unknown>).montoPagado === 'number' &&
+      'tipo' in deuda && typeof (deuda as Record<string, unknown>).tipo === 'string' &&
+      'persona' in deuda && typeof (deuda as Record<string, unknown>).persona === 'string' &&
+      'fecha' in deuda && typeof (deuda as Record<string, unknown>).fecha === 'string' &&
+      'estado' in deuda && typeof (deuda as Record<string, unknown>).estado === 'string' &&
+      'historialPagos' in deuda && Array.isArray((deuda as Record<string, unknown>).historialPagos)
+    ) as Deuda[]
+    
+    const cleanedDeudas = cleanDuplicateData(validDeudas)
     setDeudas(cleanedDeudas)
   }, [])
 

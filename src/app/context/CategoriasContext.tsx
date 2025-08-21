@@ -39,8 +39,26 @@ export function CategoriasProvider({ children }: { children: ReactNode }) {
       }))
       setCategorias(categoriasConIds)
     } else {
-      const cleanedCategorias = cleanDuplicateData(savedCategorias)
-      setCategorias(cleanedCategorias)
+      // Validar que los datos tengan la estructura correcta de Categoria
+      const validCategorias = savedCategorias.filter((cat: unknown) => 
+        cat && typeof cat === 'object' && 
+        cat !== null &&
+        'id' in cat && typeof (cat as Record<string, unknown>).id === 'number' && 
+        'nombre' in cat && typeof (cat as Record<string, unknown>).nombre === 'string' && 
+        'emoji' in cat && typeof (cat as Record<string, unknown>).emoji === 'string'
+      ) as Categoria[]
+      
+      if (validCategorias.length === 0) {
+        // Si no hay categorías válidas, usar las predefinidas
+        const categoriasConIds = categoriasPredefinidas.map((cat, index) => ({
+          ...cat,
+          id: index + 1
+        }))
+        setCategorias(categoriasConIds)
+      } else {
+        const cleanedCategorias = cleanDuplicateData(validCategorias)
+        setCategorias(cleanedCategorias)
+      }
     }
   }, [])
 

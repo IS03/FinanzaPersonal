@@ -21,7 +21,22 @@ export function TarjetasProvider({ children }: { children: ReactNode }) {
   // Cargar tarjetas desde localStorage al iniciar
   useEffect(() => {
     const savedTarjetas = JSON.parse(localStorage.getItem('tarjetas') || '[]')
-    const cleanedTarjetas = cleanDuplicateData(savedTarjetas)
+    
+    // Validar que los datos tengan la estructura correcta de Tarjeta
+    const validTarjetas = savedTarjetas.filter((tarjeta: unknown) => 
+      tarjeta && typeof tarjeta === 'object' && 
+      tarjeta !== null &&
+      'id' in tarjeta && typeof (tarjeta as Record<string, unknown>).id === 'number' && 
+      'nombre' in tarjeta && typeof (tarjeta as Record<string, unknown>).nombre === 'string' && 
+      'banco' in tarjeta && typeof (tarjeta as Record<string, unknown>).banco === 'string' &&
+      'limite' in tarjeta && typeof (tarjeta as Record<string, unknown>).limite === 'number' &&
+      'diaCierre' in tarjeta && typeof (tarjeta as Record<string, unknown>).diaCierre === 'number' &&
+      'diaVencimiento' in tarjeta && typeof (tarjeta as Record<string, unknown>).diaVencimiento === 'number' &&
+      'saldoUsado' in tarjeta && typeof (tarjeta as Record<string, unknown>).saldoUsado === 'number' &&
+      'saldoDisponible' in tarjeta && typeof (tarjeta as Record<string, unknown>).saldoDisponible === 'number'
+    ) as Tarjeta[]
+    
+    const cleanedTarjetas = cleanDuplicateData(validTarjetas)
     setTarjetas(cleanedTarjetas)
   }, [])
 
@@ -30,19 +45,19 @@ export function TarjetasProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('tarjetas', JSON.stringify(tarjetas))
   }, [tarjetas])
 
-  const agregarTarjeta = (tarjeta: Tarjeta) => {
+  const agregarTarjeta = useCallback((tarjeta: Tarjeta) => {
     setTarjetas(prevTarjetas => [...prevTarjetas, tarjeta])
-  }
+  }, [])
 
-  const actualizarTarjeta = (tarjetaActualizada: Tarjeta) => {
+  const actualizarTarjeta = useCallback((tarjetaActualizada: Tarjeta) => {
     setTarjetas(prevTarjetas => 
       prevTarjetas.map(t => t.id === tarjetaActualizada.id ? tarjetaActualizada : t)
     )
-  }
+  }, [])
 
-  const eliminarTarjeta = (id: number) => {
+  const eliminarTarjeta = useCallback((id: number) => {
     setTarjetas(prevTarjetas => prevTarjetas.filter(t => t.id !== id))
-  }
+  }, [])
 
   const actualizarSaldosTarjetas = useCallback((gastos: Gasto[]) => {
     setTarjetas(prevTarjetas => {

@@ -28,7 +28,19 @@ export default function IngresosPage() {
 
   useEffect(() => {
     const savedIngresos = JSON.parse(localStorage.getItem('ingresos') || '[]')
-    const cleanedIngresos = cleanDuplicateData(savedIngresos)
+    
+    // Validar ingresos
+    const validIngresos = savedIngresos.filter((ingreso: unknown) => 
+      ingreso && typeof ingreso === 'object' && 
+      ingreso !== null &&
+      'id' in ingreso && typeof (ingreso as Record<string, unknown>).id === 'number' &&
+      'descripcion' in ingreso && typeof (ingreso as Record<string, unknown>).descripcion === 'string' &&
+      'monto' in ingreso && typeof (ingreso as Record<string, unknown>).monto === 'number' &&
+      'fecha' in ingreso && typeof (ingreso as Record<string, unknown>).fecha === 'string' &&
+      'fuente' in ingreso && typeof (ingreso as Record<string, unknown>).fuente === 'string'
+    ) as Ingreso[]
+    
+    const cleanedIngresos = cleanDuplicateData(validIngresos)
     setIngresos(cleanedIngresos)
   }, [])
 

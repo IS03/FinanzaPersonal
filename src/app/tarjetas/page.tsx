@@ -50,7 +50,20 @@ export default function TarjetasPage() {
 
   useEffect(() => {
     const savedGastos = JSON.parse(localStorage.getItem('gastos') || '[]')
-    const cleanedGastos = cleanDuplicateData(savedGastos)
+    
+    // Validar gastos
+    const validGastos = savedGastos.filter((gasto: unknown) => 
+      gasto && typeof gasto === 'object' && 
+      gasto !== null &&
+      'id' in gasto && typeof (gasto as Record<string, unknown>).id === 'number' &&
+      'descripcion' in gasto && typeof (gasto as Record<string, unknown>).descripcion === 'string' &&
+      'monto' in gasto && typeof (gasto as Record<string, unknown>).monto === 'number' &&
+      'categoriaId' in gasto && typeof (gasto as Record<string, unknown>).categoriaId === 'number' &&
+      'medioPago' in gasto && typeof (gasto as Record<string, unknown>).medioPago === 'string' &&
+      'fecha' in gasto && typeof (gasto as Record<string, unknown>).fecha === 'string'
+    ) as Gasto[]
+    
+    const cleanedGastos = cleanDuplicateData(validGastos)
     setGastos(cleanedGastos)
     
     // Si no hay tarjetas, inicializar con las predefinidas
@@ -63,13 +76,13 @@ export default function TarjetasPage() {
       }))
       tarjetasIniciales.forEach(t => agregarTarjeta(t))
     }
-  }, [tarjetas.length])
+  }, [tarjetas.length, agregarTarjeta])
 
   useEffect(() => {
     if (gastos.length > 0) {
       actualizarSaldosTarjetas(gastos)
     }
-  }, [gastos])
+  }, [gastos, actualizarSaldosTarjetas])
 
   const resetForm = () => {
     setNuevaTarjeta({

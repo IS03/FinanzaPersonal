@@ -18,8 +18,35 @@ export default function CuotasPage() {
   useEffect(() => {
     const savedGastos = JSON.parse(localStorage.getItem('gastos') || '[]')
     const savedTarjetas = JSON.parse(localStorage.getItem('tarjetas') || '[]')
-    const cleanedGastos = cleanDuplicateData(savedGastos)
-    const cleanedTarjetas = cleanDuplicateData(savedTarjetas)
+    
+    // Validar gastos
+    const validGastos = savedGastos.filter((gasto: unknown) => 
+      gasto && typeof gasto === 'object' && 
+      gasto !== null &&
+      'id' in gasto && typeof (gasto as Record<string, unknown>).id === 'number' &&
+      'descripcion' in gasto && typeof (gasto as Record<string, unknown>).descripcion === 'string' &&
+      'monto' in gasto && typeof (gasto as Record<string, unknown>).monto === 'number' &&
+      'categoriaId' in gasto && typeof (gasto as Record<string, unknown>).categoriaId === 'number' &&
+      'medioPago' in gasto && typeof (gasto as Record<string, unknown>).medioPago === 'string' &&
+      'fecha' in gasto && typeof (gasto as Record<string, unknown>).fecha === 'string'
+    ) as Gasto[]
+    
+    // Validar tarjetas
+    const validTarjetas = savedTarjetas.filter((tarjeta: unknown) => 
+      tarjeta && typeof tarjeta === 'object' && 
+      tarjeta !== null &&
+      'id' in tarjeta && typeof (tarjeta as Record<string, unknown>).id === 'number' && 
+      'nombre' in tarjeta && typeof (tarjeta as Record<string, unknown>).nombre === 'string' && 
+      'banco' in tarjeta && typeof (tarjeta as Record<string, unknown>).banco === 'string' &&
+      'limite' in tarjeta && typeof (tarjeta as Record<string, unknown>).limite === 'number' &&
+      'diaCierre' in tarjeta && typeof (tarjeta as Record<string, unknown>).diaCierre === 'number' &&
+      'diaVencimiento' in tarjeta && typeof (tarjeta as Record<string, unknown>).diaVencimiento === 'number' &&
+      'saldoUsado' in tarjeta && typeof (tarjeta as Record<string, unknown>).saldoUsado === 'number' &&
+      'saldoDisponible' in tarjeta && typeof (tarjeta as Record<string, unknown>).saldoDisponible === 'number'
+    ) as Tarjeta[]
+    
+    const cleanedGastos = cleanDuplicateData(validGastos)
+    const cleanedTarjetas = cleanDuplicateData(validTarjetas)
     setGastos(cleanedGastos)
     setTarjetas(cleanedTarjetas)
   }, [])

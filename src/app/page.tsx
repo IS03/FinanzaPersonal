@@ -20,9 +20,47 @@ export default function Home() {
       const savedGastos = JSON.parse(localStorage.getItem('gastos') || '[]')
       const savedTarjetas = JSON.parse(localStorage.getItem('tarjetas') || '[]')
       const savedIngresos = JSON.parse(localStorage.getItem('ingresos') || '[]')
-      const cleanedGastos = cleanDuplicateData(savedGastos)
-      const cleanedTarjetas = cleanDuplicateData(savedTarjetas)
-      const cleanedIngresos = cleanDuplicateData(savedIngresos)
+      
+      // Validar gastos
+      const validGastos = savedGastos.filter((gasto: unknown) => 
+        gasto && typeof gasto === 'object' && 
+        gasto !== null &&
+        'id' in gasto && typeof (gasto as Record<string, unknown>).id === 'number' &&
+        'descripcion' in gasto && typeof (gasto as Record<string, unknown>).descripcion === 'string' &&
+        'monto' in gasto && typeof (gasto as Record<string, unknown>).monto === 'number' &&
+        'categoriaId' in gasto && typeof (gasto as Record<string, unknown>).categoriaId === 'number' &&
+        'medioPago' in gasto && typeof (gasto as Record<string, unknown>).medioPago === 'string' &&
+        'fecha' in gasto && typeof (gasto as Record<string, unknown>).fecha === 'string'
+      ) as Gasto[]
+      
+      // Validar tarjetas
+      const validTarjetas = savedTarjetas.filter((tarjeta: unknown) => 
+        tarjeta && typeof tarjeta === 'object' && 
+        tarjeta !== null &&
+        'id' in tarjeta && typeof (tarjeta as Record<string, unknown>).id === 'number' && 
+        'nombre' in tarjeta && typeof (tarjeta as Record<string, unknown>).nombre === 'string' && 
+        'banco' in tarjeta && typeof (tarjeta as Record<string, unknown>).banco === 'string' &&
+        'limite' in tarjeta && typeof (tarjeta as Record<string, unknown>).limite === 'number' &&
+        'diaCierre' in tarjeta && typeof (tarjeta as Record<string, unknown>).diaCierre === 'number' &&
+        'diaVencimiento' in tarjeta && typeof (tarjeta as Record<string, unknown>).diaVencimiento === 'number' &&
+        'saldoUsado' in tarjeta && typeof (tarjeta as Record<string, unknown>).saldoUsado === 'number' &&
+        'saldoDisponible' in tarjeta && typeof (tarjeta as Record<string, unknown>).saldoDisponible === 'number'
+      ) as Tarjeta[]
+      
+      // Validar ingresos
+      const validIngresos = savedIngresos.filter((ingreso: unknown) => 
+        ingreso && typeof ingreso === 'object' && 
+        ingreso !== null &&
+        'id' in ingreso && typeof (ingreso as Record<string, unknown>).id === 'number' &&
+        'descripcion' in ingreso && typeof (ingreso as Record<string, unknown>).descripcion === 'string' &&
+        'monto' in ingreso && typeof (ingreso as Record<string, unknown>).monto === 'number' &&
+        'fecha' in ingreso && typeof (ingreso as Record<string, unknown>).fecha === 'string' &&
+        'fuente' in ingreso && typeof (ingreso as Record<string, unknown>).fuente === 'string'
+      ) as Ingreso[]
+      
+      const cleanedGastos = cleanDuplicateData(validGastos)
+      const cleanedTarjetas = cleanDuplicateData(validTarjetas)
+      const cleanedIngresos = cleanDuplicateData(validIngresos)
       setGastos(cleanedGastos)
       setTarjetas(cleanedTarjetas)
       setIngresos(cleanedIngresos)
