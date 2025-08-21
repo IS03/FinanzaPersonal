@@ -26,7 +26,7 @@ export default function CuotasPage() {
     gasto.medioPago === 'credito' && gasto.cuotas && gasto.tarjetaId
   )
 
-  const marcarCuotaComoPagada = (gastoId: number, cuotaIndex: number) => {
+  const marcarCuotaComoPagada = (gastoId: number, _cuotaIndex: number) => {
     const gastosActualizados = gastos.map(gasto => {
       if (gasto.id === gastoId) {
         const cuotasPagadas = (gasto.cuotasPagadas || 0) + 1

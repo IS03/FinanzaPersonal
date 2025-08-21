@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import type { Tarjeta } from '@/app/types/types'
+import type { Tarjeta, Gasto } from '@/app/types/types'
 
 interface TarjetasContextType {
   tarjetas: Tarjeta[]
@@ -9,7 +9,7 @@ interface TarjetasContextType {
   agregarTarjeta: (tarjeta: Tarjeta) => void
   actualizarTarjeta: (tarjeta: Tarjeta) => void
   eliminarTarjeta: (id: number) => void
-  actualizarSaldosTarjetas: (gastos: any[]) => void
+  actualizarSaldosTarjetas: (gastos: Gasto[]) => void
 }
 
 const TarjetasContext = createContext<TarjetasContextType | undefined>(undefined)
@@ -42,7 +42,7 @@ export function TarjetasProvider({ children }: { children: ReactNode }) {
     setTarjetas(prevTarjetas => prevTarjetas.filter(t => t.id !== id))
   }
 
-  const actualizarSaldosTarjetas = (gastos: any[]) => {
+  const actualizarSaldosTarjetas = (gastos: Gasto[]) => {
     const tarjetasActualizadas = tarjetas.map(tarjeta => {
       const gastosTarjeta = gastos.filter(g => g.tarjetaId === tarjeta.id)
       const saldoUsado = gastosTarjeta.reduce((acc, gasto) => {
