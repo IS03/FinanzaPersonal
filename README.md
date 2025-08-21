@@ -1,27 +1,60 @@
-## Finanzas Personales — Next.js 15, React 19, Tailwind 4
+## 💸 Finanzas Personales — Next.js 15, React 19, Tailwind 4
+
+![status:active](https://img.shields.io/badge/status-active-brightgreen)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind](https://img.shields.io/badge/TailwindCSS-4-38b2ac?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Deploy to Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://vercel.com/new/clone?repository-url=https://github.com/IS03/FinanzaPersonal)
 
 Aplicación para gestión personal de finanzas: gastos, ingresos, tarjetas de crédito, cuotas y deudas. Persistencia en `localStorage`. UI con shadcn/ui.
 
-### Stack
+### 📚 Tabla de contenido
+- [Características](#-características)
+- [Stack](#-stack)
+- [Requisitos](#-requisitos)
+- [Scripts](#-scripts)
+- [Arquitectura](#-arquitectura)
+- [UX/UI](#-uxui)
+- [Lógica de cuotas](#-lógica-de-cuotas-reglas)
+- [Desarrollo local](#-desarrollo-local)
+- [Despliegue](#-despliegue)
+- [Diagrama](#-diagrama)
+- [Capturas](#-capturas)
+- [Roadmap](#-roadmap)
+- [Limitaciones](#-limitaciones-conocidas)
+
+---
+
+### ✅ Características
+- 🧾 Registro y edición de gastos por categoría y medio de pago.
+- 💳 Gestión de tarjetas (límite, cierre, vencimiento, saldos usados/disponibles).
+- 📅 Cálculo automático de cuotas según reglas de tarjeta; marca de pago por cuota.
+- 💼 Ingresos por fuente con filtro mensual.
+- 🤝 Deudas por cobrar/pagar; pagos totales o parciales con historial.
+- 🗂 Categorías con emoji y seed inicial.
+- 💾 Persistencia local rápida con `localStorage`.
+
+### 🧰 Stack
 - Next.js 15 (App Router) + React 19 + TypeScript
 - Tailwind CSS 4
 - shadcn/ui (Radix)
 - Iconos: `lucide-react`
 
-### Requisitos
+### 🖥️ Requisitos
 - Node.js 20 o 22
 - npm (o pnpm/yarn)
 
-### Scripts
+### 🏃 Scripts
 - `npm run dev`: servidor dev (http://localhost:3000)
 - `npm run build`: build de producción
 - `npm start`: servir build
 
 ---
 
-## Arquitectura
+## 🧱 Arquitectura
 
-### Estructura de carpetas (relevante)
+### 🗃️ Estructura de carpetas (relevante)
 - `src/app/layout.tsx`: layout global; provee `TarjetasProvider` y `CategoriasProvider`, y renderiza `MainNav`.
 - `src/app/page.tsx`: dashboard “Resumen Financiero”.
 - `src/app/gastos/page.tsx`: CRUD de gastos + diálogo de alta/edición.
@@ -37,7 +70,7 @@ Aplicación para gestión personal de finanzas: gastos, ingresos, tarjetas de cr
 - `src/components/ui/nav.tsx`: navegación principal con resaltado por ruta.
 - `src/lib/utils.ts`: helpers (`formatCurrency`, `formatDate`, `calculateMonthlyStats`, `cn`).
 
-### Flujo de datos y persistencia
+### 🔄 Flujo de datos y persistencia
 - Persistencia: `localStorage` por entidad (`gastos`, `ingresos`, `tarjetas`, `categorias`, `deudas`).
 - Providers:
   - `TarjetasProvider`: guarda/lee `tarjetas`. Expone `actualizarSaldosTarjetas(gastos)` que recalcula `saldoUsado` y `saldoDisponible` a partir de gastos con `tarjetaId`.
@@ -49,7 +82,7 @@ Aplicación para gestión personal de finanzas: gastos, ingresos, tarjetas de cr
   - Ingresos (`/ingresos`): alta y listado con filtro por mes.
   - Deudas (`/deudas`): alta, edición, eliminación; pagos totales y parciales con historial; estados `pendiente`/`parcial`/`pagada`.
 
-### Modelos de dominio (resumen)
+### 🧾 Modelos de dominio (resumen)
 - `Tarjeta`: `id`, `nombre`, `banco`, `limite`, `diaCierre`, `diaVencimiento`, `saldoUsado`, `saldoDisponible`.
 - `Gasto`: `id`, `descripcion`, `monto`, `categoriaId`, `medioPago`, `fecha`, opcionales `cuotas`, `cuotasPagadas`, `tarjetaId`, `estado`.
 - `Ingreso`: `id`, `descripcion`, `monto`, `fecha`, `fuente`.
@@ -57,15 +90,15 @@ Aplicación para gestión personal de finanzas: gastos, ingresos, tarjetas de cr
 
 ---
 
-## UX/UI
+## 🎨 UX/UI
 
-### Principios
+### ✨ Principios
 - Navegación clara con `MainNav` y estado activo por ruta.
 - Formularios simples; validación mínima en cliente.
 - Feedback inmediato: listas se actualizan tras crear/editar/eliminar (y se persisten).
 - Formato moneda local con `formatCurrency` (es-AR, ARS); fechas legibles con `formatDate`.
 
-### Patrones de interacción
+### 🧠 Patrones de interacción
 - Diálogos modales para altas/ediciones (`Dialog`).
 - Listas en `Table` con acciones por fila (editar/eliminar).
 - Selectores de mes/año en Resumen y Cuotas.
@@ -73,18 +106,18 @@ Aplicación para gestión personal de finanzas: gastos, ingresos, tarjetas de cr
   - Cuotas: badge “Pagada/Pendiente”.
   - Deudas: totales, pagado, pendiente y detalle de historial.
 
-### Accesibilidad
+### ♿ Accesibilidad
 - Uso de `label` para inputs clave.
 - Controles con foco visible (shadcn + Tailwind).
 - Texto suficiente contraste en métricas claves (rojo/orange/green).
 
-### Contenido inicial
+### 🪄 Contenido inicial
 - `CategoriasProvider` crea categorías por defecto si no hay datos.
 - `TarjetasPage` puede inicializar dos tarjetas ejemplo si no existen.
 
 ---
 
-## Lógica de cuotas (reglas)
+## 📐 Lógica de cuotas (reglas)
 - Para gastos con `medioPago='credito'` y `cuotas > 0`:
   - Se calcula primera cuota según `diaCierre` y `diaVencimiento` de la `Tarjeta`.
   - Si la compra fue después del `diaCierre`, la primera cuota vence el mes siguiente.
@@ -96,23 +129,23 @@ Aplicación para gestión personal de finanzas: gastos, ingresos, tarjetas de cr
 
 ---
 
-## Desarrollo local
+## 🧪 Desarrollo local
 
-### Instalar y ejecutar
+### ⚙️ Instalar y ejecutar
 ```bash
 npm install
 npm run dev
 # http://localhost:3000
 ```
 
-### Formato y estilo
+### 🧩 Formato y estilo
 - Tailwind 4.
 - Componentes reutilizables de shadcn/ui (`src/components/ui/*`).
 - Helpers de clase con `cn`.
 
 ---
 
-## Despliegue
+## 🚀 Despliegue
 
 ### Vercel (recomendado)
 - Importar repo desde GitHub.
@@ -126,15 +159,34 @@ npm run dev
 
 ---
 
-## Extensiones futuras (sugerencias)
+## 🗺️ Roadmap (sugerencias)
 - Persistencia en backend (API/DB) en lugar de `localStorage`.
 - Autenticación y multiusuario.
 - Categorización inteligente de gastos; reports/exports (CSV).
 - Tests unitarios/E2E.
 - Internacionalización (moneda/locale configurables).
 
-## Limitaciones conocidas
+## ⚠️ Limitaciones conocidas
 - No hay validaciones avanzadas ni manejo de timezones complejos.
 - Sin control de concurrencia ni sync entre dispositivos (localStorage).
 - Sin roles/usuarios.
+
+---
+
+## 🧭 Diagrama
+
+```mermaid
+flowchart LR
+  A[UI - Pages] -->|acciones CRUD| B(Contexts)
+  B -->|setState| C(LocalStorage)
+  C -->|rehidrata| B
+  B -->|props/state| A
+  A -->|utils| D[lib/utils]
+```
+
+---
+
+## 🖼️ Capturas
+
+> Agrega aquí screenshots o GIFs breves de las vistas principales (Resumen, Gastos, Tarjetas, Cuotas, Deudas) para facilitar onboarding.
 
