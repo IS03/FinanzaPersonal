@@ -26,7 +26,8 @@ export default function CuotasPage() {
     gasto.medioPago === 'credito' && gasto.cuotas && gasto.tarjetaId
   )
 
-  const marcarCuotaComoPagada = (gastoId: number, _cuotaIndex: number) => {
+  // QUITÉ el segundo parámetro no usado
+  const marcarCuotaComoPagada = (gastoId: number) => {
     const gastosActualizados = gastos.map(gasto => {
       if (gasto.id === gastoId) {
         const cuotasPagadas = (gasto.cuotasPagadas || 0) + 1
@@ -48,18 +49,11 @@ export default function CuotasPage() {
   const calcularFechaVencimiento = (fechaGasto: Date, tarjeta: Tarjeta, cuotaIndex: number) => {
     const fechaCierre = new Date(fechaGasto)
     fechaCierre.setDate(tarjeta.diaCierre)
-    
-    // Si la fecha de cierre es anterior a la fecha del gasto, avanzamos un mes
     if (fechaCierre < fechaGasto) {
       fechaCierre.setMonth(fechaCierre.getMonth() + 1)
     }
-    
-    // Añadimos los meses correspondientes a la cuota
     fechaCierre.setMonth(fechaCierre.getMonth() + cuotaIndex)
-    
-    // Establecemos la fecha de vencimiento (día de vencimiento)
     fechaCierre.setDate(tarjeta.diaVencimiento)
-    
     return fechaCierre
   }
 
@@ -230,7 +224,7 @@ export default function CuotasPage() {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => marcarCuotaComoPagada(cuota.gastoId, cuota.cuotaIndex)}
+                                  onClick={() => marcarCuotaComoPagada(cuota.gastoId)}
                                 >
                                   Marcar como Pagada
                                 </Button>
@@ -274,7 +268,7 @@ export default function CuotasPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => marcarCuotaComoPagada(cuota.gastoId, cuota.cuotaIndex)}
+                            onClick={() => marcarCuotaComoPagada(cuota.gastoId)}
                           >
                             Marcar como Pagada
                           </Button>
@@ -290,4 +284,4 @@ export default function CuotasPage() {
       </Tabs>
     </div>
   )
-} 
+}
