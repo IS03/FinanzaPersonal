@@ -120,3 +120,120 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Estilos personalizados para selectores desplegables */
+select {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+select::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Limitar altura del menú desplegable en navegadores modernos */
+select:focus {
+  max-height: 200px;
+}
+
+/* Para navegadores que soportan la propiedad max-height en select */
+select option {
+  max-height: 200px;
+}
+
+/* Estilos para SelectContent de Radix UI */
+[data-radix-select-content] {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+[data-radix-select-content]::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* Ocultar las flechas de scroll en los SelectContent */
+[data-radix-select-content] [data-slot="select-scroll-up-button"],
+[data-radix-select-content] [data-slot="select-scroll-down-button"] {
+  display: none !important;
+}
+
+/* Ancho fijo para todos los filtros */
+.filter-select-trigger {
+  min-width: 180px !important;
+  width: 180px !important;
+}
+
+/* Para filtros más anchos si es necesario */
+.filter-select-trigger-wide {
+  min-width: 220px !important;
+  width: 220px !important;
+}
+
+/* Para filtros de categorías que pueden ser más anchos */
+.filter-select-trigger-category {
+  min-width: 200px !important;
+  width: 200px !important;
+}
+
+/* Alternativa: scrollbar muy sutil */
+[data-radix-select-content].subtle-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+[data-radix-select-content].subtle-scroll::-webkit-scrollbar {
+  width: 4px;
+  display: block;
+}
+
+[data-radix-select-content].subtle-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-radix-select-content].subtle-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+[data-radix-select-content].subtle-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Para modo oscuro */
+.dark [data-radix-select-content].subtle-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark [data-radix-select-content].subtle-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Clase para ocultar completamente el scrollbar */
+.scrollbar-hidden {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Estilos para el EmojiPicker */
+.epr-emoji-category-content {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.epr-emoji-category-content::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Estilos para cualquier elemento con scroll que queramos ocultar */
+.scrollbar-none {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none !important;
+}

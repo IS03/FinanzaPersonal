@@ -4,10 +4,10 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { FilterSelect } from "@/components/ui/filter-select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { formatCurrency, formatDate } from "@/lib/utils"
+import { formatCurrency, formatDate, cleanDuplicateData } from "@/lib/utils"
 import type { Ingreso } from "@/app/types/types"
 
 const fuentes = [
@@ -24,10 +24,12 @@ export default function IngresosPage() {
   const [monto, setMonto] = useState("")
   const [fuente, setFuente] = useState("")
   const [filtroMes, setFiltroMes] = useState(new Date().getMonth())
+  const [filtroFuente, setFiltroFuente] = useState<string>("todas")
 
   useEffect(() => {
     const savedIngresos = JSON.parse(localStorage.getItem('ingresos') || '[]')
-    setIngresos(savedIngresos)
+    const cleanedIngresos = cleanDuplicateData(savedIngresos)
+    setIngresos(cleanedIngresos)
   }, [])
 
   const agregarIngreso = () => {
@@ -37,7 +39,7 @@ export default function IngresosPage() {
     }
 
     const nuevoIngreso: Ingreso = {
-      id: Date.now(),
+              id: Math.max(...ingresos.map(i => i.id), 0) + 1,
       descripcion,
       monto: parseFloat(monto),
       fuente,
@@ -61,7 +63,9 @@ export default function IngresosPage() {
 
   const ingresosFiltrados = ingresos.filter(ingreso => {
     const ingresoDate = new Date(ingreso.fecha)
-    return ingresoDate.getMonth() === filtroMes
+    const coincideMes = ingresoDate.getMonth() === filtroMes
+    const coincideFuente = filtroFuente === "todas" || ingreso.fuente === filtroFuente
+    return coincideMes && coincideFuente
   })
 
   const totalIngresosFiltrados = ingresosFiltrados.reduce((acc, ingreso) => acc + ingreso.monto, 0)
@@ -95,18 +99,15 @@ export default function IngresosPage() {
             </div>
             <div className="space-y-2">
               <label>Fuente</label>
-              <Select value={fuente} onValueChange={setFuente}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona la fuente" />
-                </SelectTrigger>
-                <SelectContent>
-                  {fuentes.map((f) => (
-                    <SelectItem key={f} value={f} className="capitalize">
-                      {f}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FilterSelect
+                value={fuente}
+                onValueChange={setFuente}
+                placeholder="Selecciona la fuente"
+                options={fuentes.map((f) => ({
+                  value: f,
+                  label: f.charAt(0).toUpperCase() + f.slice(1)
+                }))}
+              />
             </div>
             <Button onClick={agregarIngreso} className="w-full">
               Agregar Ingreso
@@ -125,18 +126,32 @@ export default function IngresosPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <Select value={filtroMes.toString()} onValueChange={(v) => setFiltroMes(parseInt(v))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona mes" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <SelectItem key={i} value={i.toString()}>
-                      {new Date(2024, i).toLocaleDateString('es', { month: 'long' })}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FilterSelect
+                  value={filtroMes.toString()}
+                  onValueChange={(v) => setFiltroMes(parseInt(v))}
+                  placeholder="Selecciona mes"
+                  label="Mes"
+                  options={Array.from({ length: 12 }, (_, i) => ({
+                    value: i.toString(),
+                    label: new Date(2024, i).toLocaleDateString('es', { month: 'long' })
+                  }))}
+                />
+
+                <FilterSelect
+                  value={filtroFuente}
+                  onValueChange={setFiltroFuente}
+                  placeholder="Todas las fuentes"
+                  label="Fuente"
+                  options={[
+                    { value: "todas", label: "Todas las fuentes" },
+                    ...fuentes.map((f) => ({
+                      value: f,
+                      label: f.charAt(0).toUpperCase() + f.slice(1)
+                    }))
+                  ]}
+                />
+              </div>
 
               <div className="rounded-md border">
                 <Table>

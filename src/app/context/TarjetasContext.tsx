@@ -1,7 +1,8 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 import type { Tarjeta, Gasto } from '@/app/types/types'
+import { cleanDuplicateData } from '@/lib/utils'
 
 interface TarjetasContextType {
   tarjetas: Tarjeta[]
@@ -20,7 +21,8 @@ export function TarjetasProvider({ children }: { children: ReactNode }) {
   // Cargar tarjetas desde localStorage al iniciar
   useEffect(() => {
     const savedTarjetas = JSON.parse(localStorage.getItem('tarjetas') || '[]')
-    setTarjetas(savedTarjetas)
+    const cleanedTarjetas = cleanDuplicateData(savedTarjetas)
+    setTarjetas(cleanedTarjetas)
   }, [])
 
   // Guardar tarjetas en localStorage cuando cambien
@@ -42,27 +44,27 @@ export function TarjetasProvider({ children }: { children: ReactNode }) {
     setTarjetas(prevTarjetas => prevTarjetas.filter(t => t.id !== id))
   }
 
-  const actualizarSaldosTarjetas = (gastos: Gasto[]) => {
-    const tarjetasActualizadas = tarjetas.map(tarjeta => {
-      const gastosTarjeta = gastos.filter(g => g.tarjetaId === tarjeta.id)
-      const saldoUsado = gastosTarjeta.reduce((acc, gasto) => {
-        // Para tarjetas de crédito, descontamos el monto total del gasto
-        if (gasto.medioPago === 'credito') {
+  const actualizarSaldosTarjetas = useCallback((gastos: Gasto[]) => {
+    setTarjetas(prevTarjetas => {
+      return prevTarjetas.map(tarjeta => {
+        const gastosTarjeta = gastos.filter(g => g.tarjetaId === tarjeta.id)
+        const saldoUsado = gastosTarjeta.reduce((acc, gasto) => {
+          // Para tarjetas de crédito, descontamos el monto total del gasto
+          if (gasto.medioPago === 'credito') {
+            return acc + gasto.monto
+          }
+          // Para otros medios de pago, descontamos el monto normal
           return acc + gasto.monto
+        }, 0)
+        
+        return {
+          ...tarjeta,
+          saldoUsado,
+          saldoDisponible: tarjeta.limite - saldoUsado
         }
-        // Para otros medios de pago, descontamos el monto normal
-        return acc + gasto.monto
-      }, 0)
-      
-      return {
-        ...tarjeta,
-        saldoUsado,
-        saldoDisponible: tarjeta.limite - saldoUsado
-      }
+      })
     })
-    
-    setTarjetas(tarjetasActualizadas)
-  }
+  }, [])
 
   return (
     <TarjetasContext.Provider value={{ 

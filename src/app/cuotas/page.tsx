@@ -4,8 +4,8 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { formatCurrency, formatDate } from "@/lib/utils"
+import { FilterSelect } from "@/components/ui/filter-select"
+import { formatCurrency, formatDate, cleanDuplicateData } from "@/lib/utils"
 import type { Gasto, Tarjeta } from "@/app/types/types"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -18,8 +18,10 @@ export default function CuotasPage() {
   useEffect(() => {
     const savedGastos = JSON.parse(localStorage.getItem('gastos') || '[]')
     const savedTarjetas = JSON.parse(localStorage.getItem('tarjetas') || '[]')
-    setGastos(savedGastos)
-    setTarjetas(savedTarjetas)
+    const cleanedGastos = cleanDuplicateData(savedGastos)
+    const cleanedTarjetas = cleanDuplicateData(savedTarjetas)
+    setGastos(cleanedGastos)
+    setTarjetas(cleanedTarjetas)
   }, [])
 
   const gastosEnCuotas = gastos.filter(gasto => 
@@ -130,47 +132,40 @@ export default function CuotasPage() {
   const cuotasDelMes = obtenerCuotasDelMes()
 
   return (
-    <div className="space-y-6 overflow-y-auto">
+    <div className="space-y-6 overflow-y-auto scrollbar-hidden">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold tracking-tight">Gastos en Cuotas</h2>
         <div className="flex gap-4">
-          <Select
+          <FilterSelect
             value={selectedMonth.toString()}
             onValueChange={(value) => setSelectedMonth(parseInt(value))}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Selecciona el mes" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="0">Enero</SelectItem>
-              <SelectItem value="1">Febrero</SelectItem>
-              <SelectItem value="2">Marzo</SelectItem>
-              <SelectItem value="3">Abril</SelectItem>
-              <SelectItem value="4">Mayo</SelectItem>
-              <SelectItem value="5">Junio</SelectItem>
-              <SelectItem value="6">Julio</SelectItem>
-              <SelectItem value="7">Agosto</SelectItem>
-              <SelectItem value="8">Septiembre</SelectItem>
-              <SelectItem value="9">Octubre</SelectItem>
-              <SelectItem value="10">Noviembre</SelectItem>
-              <SelectItem value="11">Diciembre</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select
+            placeholder="Selecciona el mes"
+            label="Mes"
+            options={[
+              { value: "0", label: "Enero" },
+              { value: "1", label: "Febrero" },
+              { value: "2", label: "Marzo" },
+              { value: "3", label: "Abril" },
+              { value: "4", label: "Mayo" },
+              { value: "5", label: "Junio" },
+              { value: "6", label: "Julio" },
+              { value: "7", label: "Agosto" },
+              { value: "8", label: "Septiembre" },
+              { value: "9", label: "Octubre" },
+              { value: "10", label: "Noviembre" },
+              { value: "11", label: "Diciembre" }
+            ]}
+          />
+          <FilterSelect
             value={selectedYear.toString()}
             onValueChange={(value) => setSelectedYear(parseInt(value))}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Selecciona el año" />
-            </SelectTrigger>
-            <SelectContent>
-              {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(year => (
-                <SelectItem key={year} value={year.toString()}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder="Selecciona el año"
+            label="Año"
+            options={Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(year => ({
+              value: year.toString(),
+              label: year.toString()
+            }))}
+          />
         </div>
       </div>
 

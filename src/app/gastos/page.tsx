@@ -7,11 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Plus, Pencil, Trash } from "lucide-react"
+import { FilterSelect } from "@/components/ui/filter-select"
+import { MoreHorizontal, Plus, Pencil, Trash, Filter } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import type { Gasto, MedioPago } from "../types/types"
 import { useTarjetas } from "@/app/context/TarjetasContext"
 import { useCategorias } from "@/app/context/CategoriasContext"
+import { cleanDuplicateData } from "@/lib/utils"
 
 export default function GastosPage() {
   const { tarjetas, actualizarSaldosTarjetas } = useTarjetas()
@@ -20,6 +22,13 @@ export default function GastosPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [gastoEditando, setGastoEditando] = useState<Gasto | null>(null)
+  
+  // Estados para filtros
+  const [filtroCategoria, setFiltroCategoria] = useState<string>("todas")
+  const [filtroMedioPago, setFiltroMedioPago] = useState<string>("todos")
+  const [filtroMes, setFiltroMes] = useState<string>("todos")
+  const [filtroTipoGasto, setFiltroTipoGasto] = useState<string>("todos")
+  const [mostrarFiltros, setMostrarFiltros] = useState<boolean>(false)
   const [nuevoGasto, setNuevoGasto] = useState<{
     descripcion: string;
     monto: string;
@@ -40,14 +49,15 @@ export default function GastosPage() {
 
   useEffect(() => {
     const savedGastos = JSON.parse(localStorage.getItem('gastos') || '[]')
-    setGastos(savedGastos)
+    const cleanedGastos = cleanDuplicateData(savedGastos)
+    setGastos(cleanedGastos)
   }, [])
 
   useEffect(() => {
     if (gastos.length > 0) {
       actualizarSaldosTarjetas(gastos)
     }
-  }, [gastos, actualizarSaldosTarjetas])
+  }, [gastos])
 
   const resetForm = () => {
     setNuevoGasto({
@@ -127,7 +137,7 @@ export default function GastosPage() {
       localStorage.setItem('gastos', JSON.stringify(gastosActualizados))
     } else {
       const gasto: Gasto = {
-        id: Date.now(),
+        id: Math.max(...gastos.map(g => g.id), 0) + 1,
         descripcion: nuevoGasto.descripcion,
         monto: monto,
         categoriaId: categoriaId,
@@ -146,14 +156,87 @@ export default function GastosPage() {
     setIsDialogOpen(false)
   }
 
+  // Lógica de filtrado
+  const gastosFiltrados = gastos.filter(gasto => {
+    // Filtro por categoría
+    if (filtroCategoria !== "todas" && gasto.categoriaId.toString() !== filtroCategoria) {
+      return false
+    }
+    
+    // Filtro por medio de pago
+    if (filtroMedioPago !== "todos" && gasto.medioPago !== filtroMedioPago) {
+      return false
+    }
+    
+    // Filtro por mes
+    if (filtroMes !== "todos") {
+      const fechaGasto = new Date(gasto.fecha)
+      const mesGasto = fechaGasto.getMonth().toString()
+      if (mesGasto !== filtroMes) {
+        return false
+      }
+    }
+    
+    // Filtro por tipo de gasto (cuotas vs no cuotas)
+    if (filtroTipoGasto !== "todos") {
+      if (filtroTipoGasto === "cuotas" && !gasto.cuotas) {
+        return false
+      }
+      if (filtroTipoGasto === "sin-cuotas" && gasto.cuotas) {
+        return false
+      }
+    }
+    
+    return true
+  })
+
+  // Generar opciones para filtros
+  const meses = [
+    { value: "0", label: "Enero" },
+    { value: "1", label: "Febrero" },
+    { value: "2", label: "Marzo" },
+    { value: "3", label: "Abril" },
+    { value: "4", label: "Mayo" },
+    { value: "5", label: "Junio" },
+    { value: "6", label: "Julio" },
+    { value: "7", label: "Agosto" },
+    { value: "8", label: "Septiembre" },
+    { value: "9", label: "Octubre" },
+    { value: "10", label: "Noviembre" },
+    { value: "11", label: "Diciembre" }
+  ]
+
+  const mediosPago = [
+    { value: "efectivo", label: "Efectivo" },
+    { value: "debito", label: "Débito" },
+    { value: "credito", label: "Crédito" },
+    { value: "transferencia", label: "Transferencia" },
+    { value: "otro", label: "Otro" }
+  ]
+
+  const tiposGasto = [
+    { value: "cuotas", label: "Con Cuotas" },
+    { value: "sin-cuotas", label: "Sin Cuotas" }
+  ]
+
   return (
-    <div className="space-y-6 overflow-y-auto">
+    <div className="space-y-6 overflow-y-auto scrollbar-hidden">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold tracking-tight">Gastos</h2>
-        <Button onClick={abrirDialogoAgregar}>
-          <Plus className="h-4 w-4 mr-2" />
-          Agregar Gasto
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant={mostrarFiltros ? "default" : "outline"}
+            onClick={() => setMostrarFiltros(!mostrarFiltros)}
+            className="flex items-center gap-2 transition-all duration-200"
+          >
+            <Filter className={`h-4 w-4 transition-transform duration-200 ${mostrarFiltros ? 'rotate-180' : ''}`} />
+            Filtros
+          </Button>
+          <Button onClick={abrirDialogoAgregar}>
+            <Plus className="h-4 w-4 mr-2" />
+            Agregar Gasto
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -161,6 +244,95 @@ export default function GastosPage() {
           <CardTitle>Lista de Gastos</CardTitle>
         </CardHeader>
         <CardContent>
+          {/* Filtros */}
+          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 transition-all duration-300 ease-in-out overflow-hidden ${
+            mostrarFiltros 
+              ? 'max-h-96 opacity-100' 
+              : 'max-h-0 opacity-0'
+          }`}>
+            {/* Filtro por Categoría */}
+            <FilterSelect
+              value={filtroCategoria}
+              onValueChange={setFiltroCategoria}
+              placeholder="Todas las categorías"
+              label="Categoría"
+              size="category"
+              options={[
+                { value: "todas", label: "Todas las categorías" },
+                ...categorias.map((categoria) => ({
+                  value: categoria.id.toString(),
+                  label: `${categoria.emoji} ${categoria.nombre}`
+                }))
+              ]}
+            />
+
+            {/* Filtro por Medio de Pago */}
+            <FilterSelect
+              value={filtroMedioPago}
+              onValueChange={setFiltroMedioPago}
+              placeholder="Todos los medios"
+              label="Medio de Pago"
+              options={[
+                { value: "todos", label: "Todos los medios" },
+                ...mediosPago.map((medio) => ({
+                  value: medio.value,
+                  label: medio.label
+                }))
+              ]}
+            />
+
+            {/* Filtro por Mes */}
+            <FilterSelect
+              value={filtroMes}
+              onValueChange={setFiltroMes}
+              placeholder="Todos los meses"
+              label="Mes"
+              options={[
+                { value: "todos", label: "Todos los meses" },
+                ...meses.map((mes) => ({
+                  value: mes.value,
+                  label: mes.label
+                }))
+              ]}
+            />
+
+            {/* Filtro por Tipo de Gasto */}
+            <FilterSelect
+              value={filtroTipoGasto}
+              onValueChange={setFiltroTipoGasto}
+              placeholder="Todos los tipos"
+              label="Tipo de Gasto"
+              options={[
+                { value: "todos", label: "Todos los tipos" },
+                ...tiposGasto.map((tipo) => ({
+                  value: tipo.value,
+                  label: tipo.label
+                }))
+              ]}
+            />
+          </div>
+
+          {/* Botón para limpiar filtros */}
+          <div className={`mb-4 transition-all duration-300 ease-in-out overflow-hidden ${
+            mostrarFiltros && (filtroCategoria !== "todas" || filtroMedioPago !== "todos" || filtroMes !== "todos" || filtroTipoGasto !== "todos")
+              ? 'max-h-20 opacity-100' 
+              : 'max-h-0 opacity-0'
+          }`}>
+            {(filtroCategoria !== "todas" || filtroMedioPago !== "todos" || filtroMes !== "todos" || filtroTipoGasto !== "todos") && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setFiltroCategoria("todas")
+                  setFiltroMedioPago("todos")
+                  setFiltroMes("todos")
+                  setFiltroTipoGasto("todos")
+                }}
+              >
+                Limpiar Filtros
+              </Button>
+            )}
+          </div>
+
           <Table>
             <TableHeader>
               <TableRow>
@@ -175,7 +347,7 @@ export default function GastosPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {gastos.map((gasto) => (
+              {gastosFiltrados.map((gasto) => (
                 <TableRow key={gasto.id}>
                   <TableCell>{gasto.descripcion}</TableCell>
                   <TableCell>{formatCurrency(gasto.monto)}</TableCell>
@@ -303,7 +475,9 @@ export default function GastosPage() {
                   className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <option value="">Selecciona una tarjeta</option>
-                  {tarjetas.map((tarjeta) => (
+                  {tarjetas.filter((tarjeta, index, self) => 
+                    index === self.findIndex(t => t.id === tarjeta.id)
+                  ).map((tarjeta) => (
                     <option key={tarjeta.id} value={tarjeta.id}>
                       {tarjeta.nombre} - {tarjeta.banco}
                     </option>

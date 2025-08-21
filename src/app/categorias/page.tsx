@@ -66,7 +66,7 @@ export default function CategoriasPage() {
       actualizarCategoria(categoriaActualizada)
     } else {
       const categoria = {
-        id: Date.now(),
+        id: Math.max(...categorias.map(c => c.id), 0) + 1,
         nombre: nuevaCategoria.nombre,
         emoji: nuevaCategoria.emoji
       }

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import type { Categoria } from '@/app/types/types'
+import { cleanDuplicateData } from '@/lib/utils'
 
 interface CategoriasContextType {
   categorias: Categoria[]
@@ -13,16 +14,16 @@ interface CategoriasContextType {
 
 const CategoriasContext = createContext<CategoriasContextType | undefined>(undefined)
 
-const categoriasPredefinidas: Categoria[] = [
-  { id: 1, nombre: "Alimentación", emoji: "🍽️" },
-  { id: 2, nombre: "Transporte", emoji: "🚗" },
-  { id: 3, nombre: "Vivienda", emoji: "🏠" },
-  { id: 4, nombre: "Servicios", emoji: "💡" },
-  { id: 5, nombre: "Entretenimiento", emoji: "🎮" },
-  { id: 6, nombre: "Salud", emoji: "💊" },
-  { id: 7, nombre: "Educación", emoji: "📚" },
-  { id: 8, nombre: "Ropa", emoji: "👕" },
-  { id: 9, nombre: "Otros", emoji: "📦" }
+const categoriasPredefinidas = [
+  { nombre: "Alimentación", emoji: "🍽️" },
+  { nombre: "Transporte", emoji: "🚗" },
+  { nombre: "Vivienda", emoji: "🏠" },
+  { nombre: "Servicios", emoji: "💡" },
+  { nombre: "Entretenimiento", emoji: "🎮" },
+  { nombre: "Salud", emoji: "💊" },
+  { nombre: "Educación", emoji: "📚" },
+  { nombre: "Ropa", emoji: "👕" },
+  { nombre: "Otros", emoji: "📦" }
 ]
 
 export function CategoriasProvider({ children }: { children: ReactNode }) {
@@ -32,9 +33,14 @@ export function CategoriasProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const savedCategorias = JSON.parse(localStorage.getItem('categorias') || '[]')
     if (savedCategorias.length === 0) {
-      setCategorias(categoriasPredefinidas)
+      const categoriasConIds = categoriasPredefinidas.map((cat, index) => ({
+        ...cat,
+        id: index + 1
+      }))
+      setCategorias(categoriasConIds)
     } else {
-      setCategorias(savedCategorias)
+      const cleanedCategorias = cleanDuplicateData(savedCategorias)
+      setCategorias(cleanedCategorias)
     }
   }, [])
 

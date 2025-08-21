@@ -8,12 +8,14 @@ export function cn(...inputs: ClassValue[]) {
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('es-AR', {
     style: 'currency',
-    currency: 'ARS'
+    currency: 'ARS',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(amount)
 }
 
-export function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('es-AR', {
+export function formatDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString('es-AR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -27,23 +29,39 @@ export function getCurrentMonth(): string {
   })
 }
 
-import type { Gasto, Ingreso } from "@/app/types/types"
-
-export function calculateMonthlyStats(gastos: Gasto[], ingresos: Ingreso[]) {
-  const totalGastos = gastos.reduce((acc, gasto) => acc + gasto.monto, 0)
-  const totalIngresos = ingresos.reduce((acc, ingreso) => acc + ingreso.monto, 0)
+export function calculateMonthlyStats(gastos: Array<{ monto: number }>, ingresos: Array<{ monto: number }>) {
+  const totalGastos = gastos.reduce((sum, gasto) => sum + gasto.monto, 0)
+  const totalIngresos = ingresos.reduce((sum, ingreso) => sum + ingreso.monto, 0)
   const balance = totalIngresos - totalGastos
-
-  const gastosPorCategoria = gastos.reduce((acc: Record<string, number>, gasto) => {
-    const key = String(gasto.categoriaId)
-    acc[key] = (acc[key] || 0) + gasto.monto
-    return acc
-  }, {})
 
   return {
     totalGastos,
     totalIngresos,
-    balance,
-    gastosPorCategoria
+    balance
   }
+}
+
+// Función para limpiar datos duplicados y asegurar IDs únicos
+export function cleanDuplicateData<T extends { id: number }>(data: T[]): T[] {
+  const seen = new Set<number>()
+  const cleaned: T[] = []
+  let nextId = 1
+
+  for (const item of data) {
+    if (!seen.has(item.id)) {
+      seen.add(item.id)
+      cleaned.push(item)
+    } else {
+      // Si el ID ya existe, asignar un nuevo ID único
+      const newItem = { ...item, id: nextId }
+      while (seen.has(nextId)) {
+        nextId++
+      }
+      seen.add(nextId)
+      cleaned.push(newItem)
+      nextId++
+    }
+  }
+
+  return cleaned
 }

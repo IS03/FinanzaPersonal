@@ -1,192 +1,419 @@
-## 💸 Finanzas Personales — Next.js 15, React 19, Tailwind 4
+# 📊 Finly - Control de Finanzas Personales
 
-![status:active](https://img.shields.io/badge/status-active-brightgreen)
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org)
-[![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind](https://img.shields.io/badge/TailwindCSS-4-38b2ac?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![Deploy to Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://vercel.com/new/clone?repository-url=https://github.com/IS03/FinanzaPersonal)
+Una aplicación web completa para el control y gestión de finanzas personales, desarrollada con Next.js, TypeScript y Tailwind CSS.
 
-Aplicación para gestión personal de finanzas: gastos, ingresos, tarjetas de crédito, cuotas y deudas. Persistencia en `localStorage`. UI con shadcn/ui.
+## 🚀 Características Principales
 
-### 📚 Tabla de contenido
-- [Características](#-características)
-- [Stack](#-stack)
-- [Requisitos](#-requisitos)
-- [Scripts](#-scripts)
-- [Arquitectura](#-arquitectura)
-- [UX/UI](#-uxui)
-- [Lógica de cuotas](#-lógica-de-cuotas-reglas)
-- [Desarrollo local](#-desarrollo-local)
-- [Despliegue](#-despliegue)
-- [Diagrama](#-diagrama)
-- [Capturas](#-capturas)
-- [Roadmap](#-roadmap)
-- [Limitaciones](#-limitaciones-conocidas)
+### 💰 Gestión Financiera Completa
+- **Gastos**: Registro y categorización de gastos con múltiples medios de pago
+- **Ingresos**: Control de ingresos por diferentes fuentes
+- **Tarjetas de Crédito**: Gestión de límites, saldos y fechas de vencimiento
+- **Cuotas**: Seguimiento de pagos en cuotas con estado pendiente/pagado
+- **Deudas**: Control de deudas por cobrar y por pagar
+- **Categorías**: Sistema de categorización personalizable con emojis
 
----
+### 📈 Resumen Financiero Inteligente
+- **Dashboard principal** con métricas en tiempo real
+- **Filtrado por mes/año** o vista anual completa
+- **Balance automático** (ingresos - gastos)
+- **Cuotas pendientes y pagadas** separadas
+- **Estadísticas visuales** con colores diferenciados
 
-### ✅ Características
-- 🧾 Registro y edición de gastos por categoría y medio de pago.
-- 💳 Gestión de tarjetas (límite, cierre, vencimiento, saldos usados/disponibles).
-- 📅 Cálculo automático de cuotas según reglas de tarjeta; marca de pago por cuota.
-- 💼 Ingresos por fuente con filtro mensual.
-- 🤝 Deudas por cobrar/pagar; pagos totales o parciales con historial.
-- 🗂 Categorías con emoji y seed inicial.
-- 💾 Persistencia local rápida con `localStorage`.
+### 🎯 Funcionalidades Avanzadas
+- **Persistencia local**: Datos guardados en localStorage
+- **Responsive design**: Optimizado para móviles y desktop
+- **Interfaz intuitiva**: UI moderna con componentes reutilizables
+- **Validaciones**: Prevención de errores y datos inconsistentes
 
-### 🧰 Stack
-- Next.js 15 (App Router) + React 19 + TypeScript
-- Tailwind CSS 4
-- shadcn/ui (Radix)
-- Iconos: `lucide-react`
+## 🛠️ Stack Tecnológico
 
-### 🖥️ Requisitos
-- Node.js 20 o 22
-- npm (o pnpm/yarn)
+### Frontend
+- **Next.js 15.3.0**: Framework React con App Router
+- **React 19.0.0**: Biblioteca de interfaz de usuario
+- **TypeScript 5**: Tipado estático para mayor robustez
+- **Tailwind CSS 4**: Framework CSS utility-first
+- **Radix UI**: Componentes de interfaz accesibles
+- **Lucide React**: Iconografía moderna
 
-### 🏃 Scripts
-- `npm run dev`: servidor dev (http://localhost:3000)
-- `npm run build`: build de producción
-- `npm start`: servir build
+### Herramientas de Desarrollo
+- **ESLint**: Linting de código
+- **PostCSS**: Procesamiento de CSS
+- **Turbopack**: Bundler rápido para desarrollo
 
----
+### Gestión de Estado
+- **React Context API**: Estado global para categorías y tarjetas
+- **useState/useEffect**: Estado local y efectos secundarios
+- **localStorage**: Persistencia de datos en el navegador
 
-## 🧱 Arquitectura
+## 📁 Estructura del Proyecto
 
-### 🗃️ Estructura de carpetas (relevante)
-- `src/app/layout.tsx`: layout global; provee `TarjetasProvider` y `CategoriasProvider`, y renderiza `MainNav`.
-- `src/app/page.tsx`: dashboard “Resumen Financiero”.
-- `src/app/gastos/page.tsx`: CRUD de gastos + diálogo de alta/edición.
-- `src/app/ingresos/page.tsx`: alta y listado de ingresos.
-- `src/app/tarjetas/page.tsx`: gestión de tarjetas de crédito.
-- `src/app/cuotas/page.tsx`: cálculo y seguimiento de cuotas por tarjeta y por mes.
-- `src/app/deudas/page.tsx`: deudas por cobrar/pagar, pagos totales y parciales.
-- `src/app/categorias/page.tsx`: categorías (usa `CategoriasProvider`).
-- `src/app/context/TarjetasContext.tsx`: estado de tarjetas y actualización de saldos.
-- `src/app/context/CategoriasContext.tsx`: estado de categorías (seed inicial).
-- `src/app/types/types.ts`: tipado de dominio (Gasto, Ingreso, Tarjeta, Deuda, etc).
-- `src/components/ui/*`: componentes shadcn/ui (button, card, table, dialog, select, tabs...).
-- `src/components/ui/nav.tsx`: navegación principal con resaltado por ruta.
-- `src/lib/utils.ts`: helpers (`formatCurrency`, `formatDate`, `calculateMonthlyStats`, `cn`).
+```
+finly/
+├── src/
+│   ├── app/
+│   │   ├── context/
+│   │   │   ├── CategoriasContext.tsx    # Estado global de categorías
+│   │   │   └── TarjetasContext.tsx      # Estado global de tarjetas
+│   │   ├── types/
+│   │   │   └── types.ts                 # Definiciones de tipos TypeScript
+│   │   ├── categorias/
+│   │   │   └── page.tsx                 # Gestión de categorías
+│   │   ├── cuotas/
+│   │   │   └── page.tsx                 # Gestión de cuotas
+│   │   ├── deudas/
+│   │   │   └── page.tsx                 # Gestión de deudas
+│   │   ├── gastos/
+│   │   │   └── page.tsx                 # Gestión de gastos
+│   │   ├── ingresos/
+│   │   │   └── page.tsx                 # Gestión de ingresos
+│   │   ├── tarjetas/
+│   │   │   └── page.tsx                 # Gestión de tarjetas
+│   │   ├── layout.tsx                   # Layout principal
+│   │   └── page.tsx                     # Dashboard principal
+│   ├── components/
+│   │   ├── ui/                          # Componentes UI reutilizables
+│   │   │   ├── button.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── dialog.tsx
+│   │   │   ├── dropdown-menu.tsx
+│   │   │   ├── emoji-picker.tsx
+│   │   │   ├── form.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── label.tsx
+│   │   │   ├── nav.tsx
+│   │   │   ├── select.tsx
+│   │   │   ├── table.tsx
+│   │   │   └── tabs.tsx
+│   │   └── nav.tsx                      # Navegación principal
+│   └── lib/
+│       └── utils.ts                     # Utilidades y funciones helper
+├── public/                              # Archivos estáticos
+├── package.json                         # Dependencias y scripts
+├── tsconfig.json                        # Configuración TypeScript
+├── tailwind.config.js                   # Configuración Tailwind
+└── next.config.ts                       # Configuración Next.js
+```
 
-### 🔄 Flujo de datos y persistencia
-- Persistencia: `localStorage` por entidad (`gastos`, `ingresos`, `tarjetas`, `categorias`, `deudas`).
-- Providers:
-  - `TarjetasProvider`: guarda/lee `tarjetas`. Expone `actualizarSaldosTarjetas(gastos)` que recalcula `saldoUsado` y `saldoDisponible` a partir de gastos con `tarjetaId`.
-  - `CategoriasProvider`: inicializa categorías por defecto si no hay datos guardados.
-- Derivados:
-  - Resumen (`/`): filtra `gastos` por mes/año y calcula métricas; muestra “Cuotas Pendientes” calculando vencimientos según `diaCierre`/`diaVencimiento` de cada tarjeta.
-  - Cuotas (`/cuotas`): genera cuotas por gasto en crédito, con fechas de vencimiento basadas en reglas de cierre/vencimiento y permite marcar “pagada”.
-  - Gastos (`/gastos`): CRUD; si el medio de pago es `credito`, puede asociar `tarjetaId` y `cuotas`.
-  - Ingresos (`/ingresos`): alta y listado con filtro por mes.
-  - Deudas (`/deudas`): alta, edición, eliminación; pagos totales y parciales con historial; estados `pendiente`/`parcial`/`pagada`.
+## 🚀 Instalación y Configuración
 
-### 🧾 Modelos de dominio (resumen)
-- `Tarjeta`: `id`, `nombre`, `banco`, `limite`, `diaCierre`, `diaVencimiento`, `saldoUsado`, `saldoDisponible`.
-- `Gasto`: `id`, `descripcion`, `monto`, `categoriaId`, `medioPago`, `fecha`, opcionales `cuotas`, `cuotasPagadas`, `tarjetaId`, `estado`.
-- `Ingreso`: `id`, `descripcion`, `monto`, `fecha`, `fuente`.
-- `Deuda`: `id`, `descripcion`, `monto`, `montoPagado`, `tipo`, `persona`, `fecha`, `estado`, opcionales `fechaVencimiento`, `notas`, `historialPagos[]`.
+### Prerrequisitos
+- Node.js 18+ 
+- npm o yarn
 
----
+### Pasos de Instalación
 
-## 🎨 UX/UI
+1. **Clonar el repositorio**
+```bash
+git clone https://github.com/tu-usuario/finly.git
+cd finly
+```
 
-### ✨ Principios
-- Navegación clara con `MainNav` y estado activo por ruta.
-- Formularios simples; validación mínima en cliente.
-- Feedback inmediato: listas se actualizan tras crear/editar/eliminar (y se persisten).
-- Formato moneda local con `formatCurrency` (es-AR, ARS); fechas legibles con `formatDate`.
-
-### 🧠 Patrones de interacción
-- Diálogos modales para altas/ediciones (`Dialog`).
-- Listas en `Table` con acciones por fila (editar/eliminar).
-- Selectores de mes/año en Resumen y Cuotas.
-- Estados visuales:
-  - Cuotas: badge “Pagada/Pendiente”.
-  - Deudas: totales, pagado, pendiente y detalle de historial.
-
-### ♿ Accesibilidad
-- Uso de `label` para inputs clave.
-- Controles con foco visible (shadcn + Tailwind).
-- Texto suficiente contraste en métricas claves (rojo/orange/green).
-
-### 🪄 Contenido inicial
-- `CategoriasProvider` crea categorías por defecto si no hay datos.
-- `TarjetasPage` puede inicializar dos tarjetas ejemplo si no existen.
-
----
-
-## 📐 Lógica de cuotas (reglas)
-- Para gastos con `medioPago='credito'` y `cuotas > 0`:
-  - Se calcula primera cuota según `diaCierre` y `diaVencimiento` de la `Tarjeta`.
-  - Si la compra fue después del `diaCierre`, la primera cuota vence el mes siguiente.
-  - Cada cuota fija su vencimiento en `diaVencimiento`.
-- En `/cuotas`:
-  - Vista “Cuotas del Mes”: agrupa por tarjeta y calcula “Pendiente”.
-  - Vista “Próximas Cuotas”: lista futura ordenada por fecha.
-  - Acción “Marcar como Pagada” incrementa `cuotasPagadas` en el `Gasto`.
-
----
-
-## 🧪 Desarrollo local
-
-### ⚙️ Instalar y ejecutar
+2. **Instalar dependencias**
 ```bash
 npm install
+# o
+yarn install
+```
+
+3. **Ejecutar en modo desarrollo**
+```bash
 npm run dev
-# http://localhost:3000
+# o
+yarn dev
 ```
 
-### 🧩 Formato y estilo
-- Tailwind 4.
-- Componentes reutilizables de shadcn/ui (`src/components/ui/*`).
-- Helpers de clase con `cn`.
-
----
-
-## 🚀 Despliegue
-
-### Vercel (recomendado)
-- Importar repo desde GitHub.
-- Configuración por defecto:
-  - Framework: Next.js
-  - Node: 20 o 22
-  - Install: `npm install`
-  - Build: `next build`
-  - Output: `.next`
-- Producción desde rama `main`. Cada `git push` redeploya.
-
----
-
-## 🗺️ Roadmap (sugerencias)
-- Persistencia en backend (API/DB) en lugar de `localStorage`.
-- Autenticación y multiusuario.
-- Categorización inteligente de gastos; reports/exports (CSV).
-- Tests unitarios/E2E.
-- Internacionalización (moneda/locale configurables).
-
-## ⚠️ Limitaciones conocidas
-- No hay validaciones avanzadas ni manejo de timezones complejos.
-- Sin control de concurrencia ni sync entre dispositivos (localStorage).
-- Sin roles/usuarios.
-
----
-
-## 🧭 Diagrama
-
-```mermaid
-flowchart LR
-  A[UI - Pages] -->|acciones CRUD| B(Contexts)
-  B -->|setState| C(LocalStorage)
-  C -->|rehidrata| B
-  B -->|props/state| A
-  A -->|utils| D[lib/utils]
+4. **Abrir en el navegador**
+```
+http://localhost:3000
 ```
 
+### Scripts Disponibles
+
+```bash
+npm run dev          # Servidor de desarrollo con Turbopack
+npm run build        # Construcción para producción
+npm run start        # Servidor de producción
+npm run lint         # Ejecutar ESLint
+```
+
+## 📊 Guía de Uso
+
+### 🏠 Dashboard Principal
+
+El dashboard muestra un resumen completo de tus finanzas:
+
+#### Paneles de Información
+- **Gastos**: Total de gastos del período seleccionado
+- **Ingresos**: Total de ingresos del período seleccionado
+- **Balance**: Diferencia entre ingresos y gastos (superávit/déficit)
+- **Cuotas Pendientes**: Monto total de cuotas por pagar
+- **Cuotas Pagadas**: Monto total de cuotas ya pagadas
+
+#### Filtros de Período
+- **Selector de Mes**: Enero a Diciembre o "Año completo"
+- **Selector de Año**: Años disponibles (actual + 4 años futuros)
+
+### 💳 Gestión de Tarjetas
+
+#### Agregar Tarjeta
+1. Ve a la sección "Tarjetas"
+2. Haz clic en "Agregar Tarjeta"
+3. Completa los datos:
+   - **Nombre**: Nombre de la tarjeta
+   - **Banco**: Entidad bancaria
+   - **Límite**: Límite de crédito
+   - **Día de Cierre**: Día del mes que cierra el resumen
+   - **Día de Vencimiento**: Día del mes que vence el pago
+
+#### Tarjetas Predefinidas
+La aplicación incluye dos tarjetas de ejemplo:
+- Visa Gold (Banco Nación) - $150,000
+- Mastercard Platinum (Banco Ciudad) - $200,000
+
+### 📝 Registro de Gastos
+
+#### Agregar Gasto
+1. Ve a la sección "Gastos"
+2. Haz clic en "Agregar Gasto"
+3. Completa los campos:
+   - **Descripción**: Concepto del gasto
+   - **Monto**: Cantidad gastada
+   - **Categoría**: Selecciona una categoría existente
+   - **Fecha**: Fecha del gasto
+   - **Medio de Pago**: Efectivo, Débito, Crédito, Transferencia, Otro
+   - **Tarjeta**: (Solo si es crédito/débito)
+   - **Cuotas**: (Solo si es crédito)
+
+#### Categorías Disponibles
+- 🍽️ Alimentación
+- 🚗 Transporte
+- 🏠 Vivienda
+- 💡 Servicios
+- 🎮 Entretenimiento
+- 💊 Salud
+- 📚 Educación
+- 👕 Ropa
+- 📦 Otros
+
+### 💰 Registro de Ingresos
+
+#### Agregar Ingreso
+1. Ve a la sección "Ingresos"
+2. Completa los campos:
+   - **Descripción**: Concepto del ingreso
+   - **Monto**: Cantidad recibida
+   - **Fuente**: Salario, Freelance, Inversiones, Alquiler, Otros
+
+### 💳 Gestión de Cuotas
+
+#### Ver Cuotas
+1. Ve a la sección "Cuotas"
+2. Usa las pestañas:
+   - **Cuotas Pendientes**: Cuotas por pagar
+   - **Cuotas Pagadas**: Cuotas ya pagadas
+
+#### Marcar Cuota como Pagada
+1. En la pestaña "Cuotas Pendientes"
+2. Haz clic en "Marcar como Pagada"
+3. La cuota se moverá automáticamente a "Cuotas Pagadas"
+
+### 📋 Gestión de Deudas
+
+#### Tipos de Deudas
+- **Por Pagar**: Dinero que debes a otros
+- **Por Cobrar**: Dinero que otros te deben
+
+#### Agregar Deuda
+1. Ve a la sección "Deudas"
+2. Completa los datos:
+   - **Descripción**: Concepto de la deuda
+   - **Monto**: Cantidad de la deuda
+   - **Tipo**: Por pagar o por cobrar
+   - **Persona**: Con quién es la deuda
+   - **Fecha**: Fecha de la deuda
+   - **Fecha de Vencimiento**: (Opcional)
+   - **Notas**: Información adicional
+
+#### Registrar Pagos
+- **Pago Total**: Paga toda la deuda pendiente
+- **Pago Parcial**: Paga una cantidad específica
+
+## 🔧 Desarrollo
+
+### Arquitectura del Proyecto
+
+#### Patrón de Diseño
+- **Component-Based Architecture**: Componentes reutilizables
+- **Context API**: Estado global compartido
+- **Custom Hooks**: Lógica reutilizable
+- **TypeScript**: Tipado estático para mayor robustez
+
+#### Gestión de Estado
+```typescript
+// Context para categorías
+const CategoriasContext = createContext<CategoriasContextType>()
+
+// Context para tarjetas
+const TarjetasContext = createContext<TarjetasContextType>()
+```
+
+#### Persistencia de Datos
+- **localStorage**: Almacenamiento local del navegador
+- **Sincronización automática**: Los cambios se guardan inmediatamente
+- **Limpieza de datos**: Eliminación automática de duplicados
+
+### Tipos de Datos
+
+```typescript
+interface Gasto {
+  id: number
+  descripcion: string
+  monto: number
+  categoriaId: number
+  medioPago: MedioPago
+  fecha: string
+  cuotas?: number
+  cuotasPagadas?: number
+  tarjetaId?: number
+  estado?: 'pendiente' | 'pagada'
+}
+
+interface Tarjeta {
+  id: number
+  nombre: string
+  banco: string
+  limite: number
+  diaCierre: number
+  diaVencimiento: number
+  saldoUsado: number
+  saldoDisponible: number
+}
+```
+
+### Funciones Utilitarias
+
+#### Formateo de Moneda
+```typescript
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount)
+}
+```
+
+#### Limpieza de Datos
+```typescript
+export function cleanDuplicateData<T extends { id: number }>(data: T[]): T[] {
+  // Elimina duplicados y asigna IDs únicos
+}
+```
+
+### Componentes Principales
+
+#### Dashboard (page.tsx)
+- **Estado local**: Gastos, tarjetas, ingresos, filtros
+- **Cálculos**: Estadísticas en tiempo real
+- **Filtros**: Por mes/año o año completo
+- **Renderizado condicional**: Paneles dinámicos
+
+#### Context Providers
+- **CategoriasProvider**: Gestión de categorías predefinidas y personalizadas
+- **TarjetasProvider**: Gestión de tarjetas con cálculo de saldos
+
+### Optimizaciones Implementadas
+
+#### Performance
+- **useCallback**: Prevención de re-renders innecesarios
+- **Memoización**: Cálculos optimizados
+- **Lazy loading**: Carga diferida de componentes
+
+#### UX/UI
+- **Responsive design**: Adaptable a todos los dispositivos
+- **Accesibilidad**: Componentes Radix UI
+- **Feedback visual**: Estados de carga y errores
+- **Validaciones**: Prevención de datos incorrectos
+
+## 🐛 Solución de Problemas
+
+### Errores Comunes
+
+#### "Encountered two children with the same key"
+- **Causa**: IDs duplicados en datos
+- **Solución**: La función `cleanDuplicateData` elimina automáticamente duplicados
+
+#### "Maximum update depth exceeded"
+- **Causa**: Bucles infinitos en useEffect
+- **Solución**: Uso de `useCallback` con dependencias correctas
+
+#### Datos no se guardan
+- **Causa**: localStorage no disponible
+- **Solución**: Verificar que el navegador soporte localStorage
+
+### Debugging
+
+#### Herramientas de Desarrollo
+- **React DevTools**: Inspección de componentes y estado
+- **Browser DevTools**: Console para errores y localStorage
+- **TypeScript**: Verificación de tipos en tiempo de compilación
+
+#### Logs de Debug
+```typescript
+console.error("Error al cargar datos:", error)
+console.error("Error al procesar fecha:", gasto.fecha, error)
+```
+
+## 🔮 Roadmap
+
+### Próximas Funcionalidades
+- [ ] **Exportación de datos**: PDF, Excel, CSV
+- [ ] **Gráficos y estadísticas**: Visualizaciones avanzadas
+- [ ] **Presupuestos**: Planificación mensual/anual
+- [ ] **Metas financieras**: Objetivos de ahorro
+- [ ] **Recordatorios**: Notificaciones de vencimientos
+- [ ] **Sincronización en la nube**: Backup automático
+- [ ] **Múltiples monedas**: Soporte para diferentes divisas
+- [ ] **Análisis de tendencias**: Comparación entre períodos
+
+### Mejoras Técnicas
+- [ ] **PWA**: Aplicación web progresiva
+- [ ] **Offline support**: Funcionamiento sin conexión
+- [ ] **Testing**: Unit tests y integration tests
+- [ ] **CI/CD**: Pipeline de despliegue automático
+- [ ] **Performance**: Optimizaciones adicionales
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📞 Soporte
+
+Si tienes problemas o preguntas:
+
+- **Issues**: Abre un issue en GitHub
+- **Documentación**: Revisa este README
+- **Código**: Explora el código fuente
+
+## 🙏 Agradecimientos
+
+- **Next.js Team**: Framework increíble
+- **Tailwind CSS**: Sistema de diseño utility-first
+- **Radix UI**: Componentes accesibles
+- **Lucide**: Iconografía moderna
+- **Comunidad React**: Inspiración y recursos
+
 ---
 
-## 🖼️ Capturas
-
-> Agrega aquí screenshots o GIFs breves de las vistas principales (Resumen, Gastos, Tarjetas, Cuotas, Deudas) para facilitar onboarding.
-
+**Desarrollado con ❤️ para el control financiero personal**

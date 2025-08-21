@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { formatCurrency, formatDate } from "@/lib/utils"
+import { formatCurrency, formatDate, cleanDuplicateData } from "@/lib/utils"
 import type { Deuda, PagoDeuda } from "@/app/types/types"
 
 export default function DeudasPage() {
@@ -31,7 +31,8 @@ export default function DeudasPage() {
 
   useEffect(() => {
     const savedDeudas = JSON.parse(localStorage.getItem('deudas') || '[]')
-    setDeudas(savedDeudas)
+    const cleanedDeudas = cleanDuplicateData(savedDeudas)
+    setDeudas(cleanedDeudas)
   }, [])
 
   const guardarDeuda = () => {
@@ -60,7 +61,7 @@ export default function DeudasPage() {
       localStorage.setItem('deudas', JSON.stringify(deudasActualizadas))
     } else {
       const deuda: Deuda = {
-        id: Date.now(),
+        id: Math.max(...deudas.map(d => d.id), 0) + 1,
         descripcion: nuevaDeuda.descripcion,
         monto: parseFloat(nuevaDeuda.monto),
         montoPagado: 0,
@@ -113,7 +114,7 @@ export default function DeudasPage() {
         const estado: 'pendiente' | 'pagada' | 'parcial' = nuevoMontoPagado >= deuda.monto ? 'pagada' : 'parcial'
         
         const nuevoPago: PagoDeuda = {
-          id: Date.now(),
+          id: Math.max(...deuda.historialPagos.map(p => p.id), 0) + 1,
           monto: montoPagoNum,
           fecha: new Date().toISOString(),
           notas: `Pago ${deuda.historialPagos.length + 1}`
@@ -215,7 +216,7 @@ export default function DeudasPage() {
                   <SelectTrigger>
                     <SelectValue placeholder="Selecciona el tipo" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-[200px] scrollbar-hidden">
                     <SelectItem value="porPagar">Por Pagar</SelectItem>
                     <SelectItem value="porCobrar">Por Cobrar</SelectItem>
                   </SelectContent>

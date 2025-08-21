@@ -6,14 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { FilterSelect } from "@/components/ui/filter-select"
 import { MoreHorizontal, Plus, Pencil, Trash, CreditCard } from "lucide-react"
-import { formatCurrency } from "@/lib/utils"
+import { formatCurrency, cleanDuplicateData } from "@/lib/utils"
 import type { Tarjeta, Gasto } from "@/app/types/types"
 import { useTarjetas } from "@/app/context/TarjetasContext"
 
-const tarjetasPredefinidas: Tarjeta[] = [
+const tarjetasPredefinidas = [
   {
-    id: 1,
     nombre: "Visa Gold",
     banco: "Banco Nación",
     limite: 150000,
@@ -23,7 +23,6 @@ const tarjetasPredefinidas: Tarjeta[] = [
     saldoDisponible: 150000
   },
   {
-    id: 2,
     nombre: "Mastercard Platinum",
     banco: "Banco Ciudad",
     limite: 200000,
@@ -47,27 +46,30 @@ export default function TarjetasPage() {
     diaCierre: "",
     diaVencimiento: ""
   })
+  const [ordenamiento, setOrdenamiento] = useState<string>("nombre")
 
   useEffect(() => {
     const savedGastos = JSON.parse(localStorage.getItem('gastos') || '[]')
-    setGastos(savedGastos)
+    const cleanedGastos = cleanDuplicateData(savedGastos)
+    setGastos(cleanedGastos)
     
     // Si no hay tarjetas, inicializar con las predefinidas
     if (tarjetas.length === 0) {
-      const tarjetasIniciales = tarjetasPredefinidas.map(t => ({
+      const tarjetasIniciales = tarjetasPredefinidas.map((t, index) => ({
         ...t,
+        id: index + 1,
         saldoUsado: 0,
         saldoDisponible: t.limite
       }))
       tarjetasIniciales.forEach(t => agregarTarjeta(t))
     }
-  }, [agregarTarjeta, tarjetas.length])
+  }, [tarjetas.length])
 
   useEffect(() => {
     if (gastos.length > 0) {
       actualizarSaldosTarjetas(gastos)
     }
-  }, [gastos, actualizarSaldosTarjetas])
+  }, [gastos])
 
   const resetForm = () => {
     setNuevaTarjeta({
@@ -134,7 +136,7 @@ export default function TarjetasPage() {
       actualizarTarjeta(tarjetaActualizada)
     } else {
       const tarjeta: Tarjeta = {
-        id: Date.now(),
+        id: Math.max(...tarjetas.map(t => t.id), 0) + 1,
         nombre: nuevaTarjeta.nombre,
         banco: nuevaTarjeta.banco,
         limite: limite,
@@ -150,6 +152,23 @@ export default function TarjetasPage() {
     setIsDialogOpen(false)
   }
 
+  // Lógica de ordenamiento
+  const tarjetasOrdenadas = [...tarjetas].sort((a, b) => {
+    switch (ordenamiento) {
+      case "saldoDisponible":
+        return b.saldoDisponible - a.saldoDisponible
+      case "saldoUsado":
+        return b.saldoUsado - a.saldoUsado
+      case "limite":
+        return b.limite - a.limite
+      case "banco":
+        return a.banco.localeCompare(b.banco)
+      case "nombre":
+      default:
+        return a.nombre.localeCompare(b.nombre)
+    }
+  })
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -160,8 +179,28 @@ export default function TarjetasPage() {
         </Button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {tarjetas.map((tarjeta) => (
+      {/* Selector de ordenamiento */}
+      <div className="flex justify-end">
+        <FilterSelect
+          value={ordenamiento}
+          onValueChange={setOrdenamiento}
+          placeholder="Ordenar por"
+          label="Ordenar por"
+          size="wide"
+          options={[
+            { value: "nombre", label: "Nombre" },
+            { value: "banco", label: "Banco" },
+            { value: "limite", label: "Límite" },
+            { value: "saldoDisponible", label: "Saldo Disponible" },
+            { value: "saldoUsado", label: "Saldo Usado" }
+          ]}
+        />
+      </div>
+
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {tarjetasOrdenadas.filter((tarjeta, index, self) => 
+            index === self.findIndex(t => t.id === tarjeta.id)
+          ).map((tarjeta) => (
           <Card key={tarjeta.id}>
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
