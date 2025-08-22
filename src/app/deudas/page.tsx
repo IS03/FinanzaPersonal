@@ -372,19 +372,19 @@ export default function DeudasPage() {
       </div>
 
       <Tabs defaultValue="pendientes" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 shadow-sm">
-          <TabsTrigger value="pendientes" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-2 shadow-sm items-center justify-center h-12">
+          <TabsTrigger value="pendientes" className="flex items-center justify-center gap-2 h-full">
             <AlertTriangle className="h-4 w-4" />
             Pendientes
           </TabsTrigger>
-          <TabsTrigger value="pagadas" className="flex items-center gap-2">
+          <TabsTrigger value="pagadas" className="flex items-center justify-center gap-2 h-full">
             <CheckCircle className="h-4 w-4" />
             Pagadas
           </TabsTrigger>
         </TabsList>
         <TabsContent value="pendientes" className="min-h-[300px]">
           {deudasPendientes.length === 0 ? (
-            <Card className="group hover:shadow-lg transition-all duration-200">
+            <Card className="group hover:shadow-lg transition-all duration-200 h-[300px] flex items-center justify-center">
               <CardContent className="pt-6 text-center">
                 <Handshake className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
                 <p className="text-muted-foreground text-sm sm:text-base">No hay deudas pendientes</p>
@@ -503,7 +503,7 @@ export default function DeudasPage() {
         </TabsContent>
         <TabsContent value="pagadas" className="min-h-[300px]">
           {deudasPagadas.length === 0 ? (
-            <Card className="group hover:shadow-lg transition-all duration-200">
+            <Card className="group hover:shadow-lg transition-all duration-200 h-[300px] flex items-center justify-center">
               <CardContent className="pt-6 text-center">
                 <CheckCircle className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
                 <p className="text-muted-foreground text-sm sm:text-base">No hay deudas pagadas aún</p>

@@ -223,12 +223,12 @@ export default function CuotasPage() {
       </div>
 
       <Tabs defaultValue="mes" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 shadow-sm">
-          <TabsTrigger value="mes" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-2 shadow-sm items-center justify-center h-12">
+          <TabsTrigger value="mes" className="flex items-center justify-center gap-2 h-full">
             <Calendar className="h-4 w-4" />
             Cuotas del Mes
           </TabsTrigger>
-          <TabsTrigger value="futuras" className="flex items-center gap-2">
+          <TabsTrigger value="futuras" className="flex items-center justify-center gap-2 h-full">
             <TrendingUp className="h-4 w-4" />
             Próximas Cuotas
           </TabsTrigger>

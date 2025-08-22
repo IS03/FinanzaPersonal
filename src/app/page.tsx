@@ -347,12 +347,12 @@ export default function Home() {
       </div>
 
       <Tabs defaultValue="pendientes" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 shadow-sm items-center justify-center">
-          <TabsTrigger value="pendientes" className="flex items-center justify-center gap-2">
+        <TabsList className="grid w-full grid-cols-2 shadow-sm items-center justify-center h-12">
+          <TabsTrigger value="pendientes" className="flex items-center justify-center gap-2 h-full">
             <CreditCard className="h-4 w-4" />
             Cuotas Pendientes
           </TabsTrigger>
-          <TabsTrigger value="pagadas" className="flex items-center justify-center gap-2">
+          <TabsTrigger value="pagadas" className="flex items-center justify-center gap-2 h-full">
             <Receipt className="h-4 w-4" />
             Cuotas Pagadas
           </TabsTrigger>
