@@ -28,6 +28,9 @@
 - ⚡ **Rápida** - Construida con Next.js 15 y optimizada para performance
 - 🔒 **Privada** - Tus datos se mantienen en tu dispositivo
 - 🎯 **Intuitiva** - Fácil de usar, sin curva de aprendizaje
+- 🌙 **Modo Oscuro** - Soporte completo para temas claros y oscuros
+- 📊 **Dashboard Inteligente** - Métricas en tiempo real
+- 🏷️ **Categorización Avanzada** - Emojis y personalización completa
 
 ---
 
@@ -50,6 +53,7 @@
 - **Filtros flexibles** - Por mes, año o período completo
 - **Estadísticas visuales** - Colores diferenciados para mejor comprensión
 - **Cuotas separadas** - Pendientes y pagadas claramente diferenciadas
+- **Gráficos interactivos** - Visualización de tendencias financieras
 
 ### 🎨 Experiencia de Usuario
 
@@ -57,6 +61,7 @@
 - **Botón flotante** - Acceso rápido para agregar gastos desde cualquier página
 - **Animaciones suaves** - Transiciones elegantes y feedback visual
 - **Modo oscuro** - Soporte completo para temas claros y oscuros
+- **Accesibilidad** - Diseño inclusivo con soporte para lectores de pantalla
 
 ---
 
@@ -70,6 +75,8 @@ graph TD
     C --> D[Tailwind CSS 4]
     D --> E[Radix UI]
     E --> F[Lucide React]
+    F --> G[React Hook Form]
+    G --> H[Zod Validation]
 ```
 
 ### Herramientas de Desarrollo
@@ -77,12 +84,30 @@ graph TD
 - **🔍 ESLint** - Linting de código para calidad
 - **🎨 PostCSS** - Procesamiento avanzado de CSS
 - **📦 npm** - Gestión de dependencias
+- **🎯 TypeScript** - Tipado estático para robustez
+
+### Dependencias Principales
+```json
+{
+  "next": "15.3.0",
+  "react": "^19.0.0",
+  "typescript": "^5",
+  "tailwindcss": "^4",
+  "@radix-ui/react-dialog": "^1.1.7",
+  "@radix-ui/react-dropdown-menu": "^2.1.7",
+  "react-hook-form": "^7.55.0",
+  "zod": "^3.24.2",
+  "emoji-picker-react": "^4.12.2",
+  "lucide-react": "^0.488.0"
+}
+```
 
 ### Arquitectura
 - **🏗️ App Router** - Enrutamiento moderno de Next.js
 - **🌐 Context API** - Estado global eficiente
 - **💾 localStorage** - Persistencia local de datos
 - **🎯 TypeScript** - Tipado estático para robustez
+- **🔧 Custom Hooks** - Lógica reutilizable
 
 ---
 
@@ -98,6 +123,9 @@ graph TD
 
 ### 💳 Gestión de Gastos
 ![Gastos](https://via.placeholder.com/800x400/1f2937/ffffff?text=Gestión+de+Gastos)
+
+### 🌙 Modo Oscuro
+![Dark Mode](https://via.placeholder.com/800x400/374151/ffffff?text=Modo+Oscuro)
 
 </div>
 
@@ -133,6 +161,15 @@ npm run dev          # 🚀 Desarrollo con Turbopack
 npm run build        # 🏗️ Construcción para producción
 npm run start        # 🌐 Servidor de producción
 npm run lint         # 🔍 Verificación de código
+```
+
+### 🔧 Configuración del Entorno
+
+#### Variables de Entorno (Opcional)
+```bash
+# .env.local
+NEXT_PUBLIC_APP_NAME=Findly
+NEXT_PUBLIC_APP_VERSION=1.0.0
 ```
 
 ---
@@ -247,7 +284,9 @@ findly/
 │   │   ├── 📁 context/            # Estado global
 │   │   │   ├── CategoriasContext.tsx
 │   │   │   ├── TarjetasContext.tsx
-│   │   │   └── GastoModalContext.tsx
+│   │   │   ├── GastosContext.tsx
+│   │   │   ├── GastoModalContext.tsx
+│   │   │   └── ThemeContext.tsx
 │   │   ├── 📁 types/              # Definiciones TypeScript
 │   │   │   └── types.ts
 │   │   ├── 📁 categorias/         # Gestión de categorías
@@ -265,18 +304,34 @@ findly/
 │   │   │   ├── dialog.tsx
 │   │   │   ├── floating-action-button.tsx
 │   │   │   ├── nav.tsx
+│   │   │   ├── form.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── select.tsx
+│   │   │   ├── table.tsx
+│   │   │   ├── tabs.tsx
+│   │   │   ├── toast.tsx
+│   │   │   ├── theme-toggle.tsx
 │   │   │   └── ...
 │   │   ├── GastoModal.tsx         # Modal de gastos
+│   │   ├── EmojiPicker.tsx        # Selector de emojis
 │   │   └── nav.tsx                # Navegación
 │   └── 📁 lib/                    # Utilidades
 │       ├── config.ts              # Configuración
 │       ├── utils.ts               # Funciones helper
 │       └── validations.ts         # Validaciones
 ├── 📁 public/                     # Archivos estáticos
+│   ├── 📁 favicon/                # Iconos de la aplicación
+│   ├── 📁 img/                    # Imágenes
+│   ├── manifest.json              # PWA manifest
+│   └── ...
+├── 📁 scripts/                    # Scripts de utilidad
+│   └── generate-icons.js          # Generador de iconos
 ├── package.json                   # Dependencias
 ├── tsconfig.json                  # Config TypeScript
 ├── tailwind.config.js             # Config Tailwind
-└── next.config.ts                 # Config Next.js
+├── next.config.ts                 # Config Next.js
+├── components.json                # Config Radix UI
+└── eslint.config.mjs              # Config ESLint
 ```
 
 ### 🔧 Patrones de Diseño
@@ -288,6 +343,8 @@ interface ButtonProps {
   variant: 'default' | 'outline' | 'ghost'
   size: 'sm' | 'md' | 'lg'
   children: React.ReactNode
+  onClick?: () => void
+  disabled?: boolean
 }
 ```
 
@@ -299,8 +356,14 @@ const CategoriasContext = createContext<CategoriasContextType>()
 // Context para tarjetas
 const TarjetasContext = createContext<TarjetasContextType>()
 
+// Context para gastos
+const GastosContext = createContext<GastosContextType>()
+
 // Context para modal de gastos
 const GastoModalContext = createContext<GastoModalContextType>()
+
+// Context para tema
+const ThemeContext = createContext<ThemeContextType>()
 ```
 
 #### Custom Hooks
@@ -310,6 +373,9 @@ const { toast, showToast, hideToast } = useToast()
 
 // Hook para modal de gastos
 const { isModalOpen, openModal, closeModal } = useGastoModal()
+
+// Hook para tema
+const { theme, toggleTheme } = useTheme()
 ```
 
 ### 📊 Tipos de Datos
@@ -347,6 +413,27 @@ interface Categoria {
   nombre: string
   emoji: string
   color?: string
+}
+
+// Ingreso
+interface Ingreso {
+  id: number
+  descripcion: string
+  monto: number
+  fuente: string
+  fecha: string
+}
+
+// Deuda
+interface Deuda {
+  id: number
+  descripcion: string
+  monto: number
+  tipo: 'porPagar' | 'porCobrar'
+  persona: string
+  fecha: string
+  vencimiento?: string
+  notas?: string
 }
 ```
 
@@ -388,6 +475,15 @@ interface Categoria {
 #### Modo Oscuro
 - Soporte completo para temas claros y oscuros
 - Transiciones suaves entre modos
+- Colores adaptativos según el tema
+
+### 🎯 Accesibilidad
+
+#### Características de Accesibilidad
+- **Navegación por teclado** - Soporte completo para navegación sin mouse
+- **Lectores de pantalla** - ARIA labels y roles apropiados
+- **Contraste de colores** - Cumple estándares WCAG
+- **Tamaños de fuente** - Escalables y legibles
 
 ---
 
@@ -416,6 +512,7 @@ useEffect(() => {
 - **Turbopack**: Bundler ultra-rápido para desarrollo
 - **Static Generation**: Páginas pre-renderizadas
 - **Image Optimization**: Optimización automática de imágenes
+- **Code Splitting**: División automática del bundle
 
 ### 📊 Gestión de Estado
 
@@ -428,6 +525,28 @@ useEffect(() => {
 - **Sincronización automática**: Guardado inmediato de cambios
 - **Limpieza de datos**: Eliminación automática de duplicados
 - **Error handling**: Manejo robusto de errores de almacenamiento
+- **Compresión**: Optimización del espacio de almacenamiento
+
+### 🎯 Optimizaciones Específicas
+
+#### Carga Diferida
+```typescript
+// Lazy loading de componentes pesados
+const EmojiPicker = lazy(() => import('./EmojiPicker'))
+
+// Suspense para loading states
+<Suspense fallback={<Spinner />}>
+  <EmojiPicker />
+</Suspense>
+```
+
+#### Memoización de Datos
+```typescript
+// Memoización de cálculos costosos
+const totalGastos = useMemo(() => {
+  return gastos.reduce((sum, gasto) => sum + gasto.monto, 0)
+}, [gastos])
+```
 
 ---
 
@@ -453,12 +572,19 @@ useEffect(() => {
 # Solución: Verificar soporte del navegador
 ```
 
+#### Error de TypeScript
+```bash
+# Causa: Tipos incorrectos o faltantes
+# Solución: Verificar definiciones en types.ts
+```
+
 ### 🔧 Debugging
 
 #### Herramientas Recomendadas
 - **🛠️ React DevTools**: Inspección de componentes y estado
 - **🌐 Browser DevTools**: Console para errores y localStorage
 - **📝 TypeScript**: Verificación de tipos en tiempo de compilación
+- **🔍 ESLint**: Detección de problemas de código
 
 #### Logs de Debug
 ```typescript
@@ -466,6 +592,43 @@ useEffect(() => {
 console.error("Error al cargar datos:", error)
 console.error("Error al procesar fecha:", gasto.fecha, error)
 console.log("Estado actual:", { gastos, tarjetas, categorias })
+```
+
+### 🛠️ Mantenimiento
+
+#### Limpieza de Datos
+```typescript
+// Función para limpiar datos duplicados
+const cleanDuplicateData = (data: any[]) => {
+  return data.filter((item, index, self) => 
+    index === self.findIndex(t => t.id === item.id)
+  )
+}
+```
+
+#### Backup y Restauración
+```typescript
+// Exportar datos
+const exportData = () => {
+  const data = {
+    gastos: JSON.parse(localStorage.getItem('gastos') || '[]'),
+    tarjetas: JSON.parse(localStorage.getItem('tarjetas') || '[]'),
+    categorias: JSON.parse(localStorage.getItem('categorias') || '[]')
+  }
+  return JSON.stringify(data, null, 2)
+}
+
+// Importar datos
+const importData = (jsonData: string) => {
+  try {
+    const data = JSON.parse(jsonData)
+    Object.entries(data).forEach(([key, value]) => {
+      localStorage.setItem(key, JSON.stringify(value))
+    })
+  } catch (error) {
+    console.error('Error al importar datos:', error)
+  }
+}
 ```
 
 ---
@@ -479,16 +642,24 @@ console.log("Estado actual:", { gastos, tarjetas, categorias })
 - [ ] **📊 Estadísticas detalladas** - Análisis de tendencias
 - [ ] **🎯 Metas financieras** - Objetivos de ahorro con tracking
 - [ ] **📅 Presupuestos** - Planificación mensual/anual
+- [ ] **📊 Reportes PDF** - Exportación de reportes
 
 #### 🔄 Sincronización
 - [ ] **☁️ Backup en la nube** - Sincronización automática
 - [ ] **📱 PWA completa** - Instalación como app nativa
 - [ ] **🔄 Sincronización multi-dispositivo** - Datos en todos tus dispositivos
+- [ ] **📤 Exportación/Importación** - Backup manual de datos
 
 #### 🌍 Internacionalización
 - [ ] **🌐 Múltiples idiomas** - Soporte para español, inglés, portugués
 - [ ] **💱 Múltiples monedas** - USD, EUR, ARS, BRL, etc.
 - [ ] **📅 Formatos regionales** - Fechas y números según región
+
+#### 🔐 Seguridad y Privacidad
+- [ ] **🔒 Encriptación local** - Protección de datos sensibles
+- [ ] **🔐 Autenticación** - Login con Google/OAuth
+- [ ] **📱 Biometría** - Huella digital/Face ID
+- [ ] **🔍 Auditoría** - Log de cambios y accesos
 
 ### 🛠️ Mejoras Técnicas
 
@@ -496,16 +667,19 @@ console.log("Estado actual:", { gastos, tarjetas, categorias })
 - [ ] **🧪 Unit Tests** - Jest + React Testing Library
 - [ ] **🔍 Integration Tests** - Testing de flujos completos
 - [ ] **🎯 E2E Tests** - Playwright para testing end-to-end
+- [ ] **📊 Performance Tests** - Lighthouse CI
 
 #### DevOps
 - [ ] **🚀 CI/CD Pipeline** - GitHub Actions
 - [ ] **📦 Docker** - Containerización
 - [ ] **☁️ Deploy automático** - Vercel/Netlify
+- [ ] **📊 Monitoring** - Analytics y error tracking
 
 #### Performance
 - [ ] **⚡ Lazy loading** - Carga diferida de componentes
 - [ ] **🎯 Code splitting** - División inteligente del bundle
 - [ ] **📱 Service Worker** - Caching offline
+- [ ] **🔍 Bundle analyzer** - Optimización del tamaño
 
 ---
 
@@ -547,6 +721,13 @@ style: mejorar diseño del botón flotante
 refactor: optimizar lógica de filtros
 test: agregar tests para validaciones
 ```
+
+#### Checklist de Pull Request
+- [ ] Código sigue los estándares del proyecto
+- [ ] Tests pasan correctamente
+- [ ] Documentación actualizada
+- [ ] No hay errores de TypeScript
+- [ ] Responsive design verificado
 
 ---
 
@@ -596,6 +777,8 @@ copies or substantial portions of the Software.
 - **[Tailwind CSS](https://tailwindcss.com/)** - Sistema de diseño utility-first
 - **[Radix UI](https://www.radix-ui.com/)** - Componentes accesibles
 - **[Lucide](https://lucide.dev/)** - Iconografía moderna
+- **[React Hook Form](https://react-hook-form.com/)** - Formularios eficientes
+- **[Zod](https://zod.dev/)** - Validación de esquemas
 
 ### 👥 Comunidad
 - **React Community** - Inspiración y recursos
