@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { cn } from "@/lib/utils"
 import { Menu, X } from "lucide-react"
 import { Button } from "./button"
@@ -46,6 +46,7 @@ export function MainNav() {
 
   // Función para cerrar el menú con animación
   const closeMenu = () => {
+    if (isClosing) return // Evitar múltiples cierres simultáneos
     setIsClosing(true)
     setTimeout(() => {
       setIsMobileMenuOpen(false)
@@ -56,6 +57,7 @@ export function MainNav() {
 
   // Función para abrir el menú
   const openMenu = () => {
+    if (isMobileMenuOpen || isClosing) return // Evitar múltiples aperturas simultáneas
     setIsMobileMenuOpen(true)
     setIsClosing(false)
     document.body.style.overflow = 'hidden'
@@ -63,19 +65,20 @@ export function MainNav() {
 
   // Función para manejar el clic del botón del menú
   const handleMenuClick = () => {
-    if (isMobileMenuOpen) {
+    if (isMobileMenuOpen || isClosing) {
       closeMenu()
     } else {
       openMenu()
     }
   }
 
-  // Cerrar menú al cambiar de ruta
+  // Cerrar menú al cambiar de ruta solamente
   useEffect(() => {
     if (isMobileMenuOpen) {
       closeMenu()
     }
-  }, [pathname, isMobileMenuOpen, closeMenu])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
 
   // Prevenir scroll del body cuando el menú está abierto
   useEffect(() => {
