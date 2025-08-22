@@ -35,14 +35,14 @@ export function FilterSelect({
   }
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("space-y-2 w-full", className)}>
       {label && (
         <label className="text-sm font-medium text-foreground">
           {label}
         </label>
       )}
       <Select value={value} onValueChange={onValueChange}>
-        <SelectTrigger className={getTriggerClass()}>
+        <SelectTrigger className={cn(getTriggerClass(), "w-full")}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent className="max-h-[100px] scrollbar-hidden">

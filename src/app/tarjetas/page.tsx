@@ -9,7 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { FilterSelect } from "@/components/ui/filter-select"
 import { Toast, useToast } from "@/components/ui/toast"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { MoreHorizontal, Plus, Pencil, Trash, CreditCard } from "lucide-react"
+import { MoreHorizontal, Plus, Pencil, Trash, CreditCard, Building2, Calendar, DollarSign } from "lucide-react"
 import { formatCurrency, cleanDuplicateData } from "@/lib/utils"
 import { validarCamposObligatorios, validarMonto } from "@/lib/validations"
 import type { Tarjeta, Gasto } from "@/app/types/types"
@@ -280,18 +280,19 @@ export default function TarjetasPage() {
   })
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Tarjetas</h2>
-        <Button onClick={abrirDialogoAgregar} className="w-full sm:w-auto">
+    <div className="space-y-3 sm:space-y-6 px-2 sm:px-0">
+      {/* Header mejorado para móvil */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <h2 className="text-xl sm:text-3xl font-bold tracking-tight">Tarjetas</h2>
+        <Button onClick={abrirDialogoAgregar} className="w-full sm:w-auto shadow-sm hover:shadow-md transition-shadow">
           <Plus className="h-4 w-4 mr-2" />
           Agregar Tarjeta
         </Button>
       </div>
 
-      {/* Filtros y ordenamiento */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+      {/* Filtros optimizados para móvil */}
+      <div className="flex flex-col gap-3 sm:gap-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full">
           <FilterSelect
             value={filtroTipo}
             onValueChange={setFiltroTipo}
@@ -322,20 +323,29 @@ export default function TarjetasPage() {
         </div>
       </div>
 
-              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {tarjetasOrdenadas.filter((tarjeta, index, self) => 
-            index === self.findIndex(t => t.id === tarjeta.id)
-          ).map((tarjeta) => (
-          <Card key={tarjeta.id}>
-            <CardHeader>
-              <CardTitle className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <CreditCard className="h-5 w-5" />
-                  {tarjeta.nombre}
+      {/* Grid de tarjetas mejorado para móvil */}
+      <div className="grid gap-3 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {tarjetasOrdenadas.filter((tarjeta, index, self) => 
+          index === self.findIndex(t => t.id === tarjeta.id)
+        ).map((tarjeta) => (
+          <Card key={tarjeta.id} className="group hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500 hover:border-l-blue-600">
+            <CardHeader className="pb-3 sm:pb-4">
+              <CardTitle className="flex justify-between items-start sm:items-center gap-2">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <div className={`p-1.5 rounded-full ${tarjeta.tipo === 'credito' ? 'bg-purple-100 dark:bg-purple-900/20' : 'bg-green-100 dark:bg-green-900/20'}`}>
+                    <CreditCard className={`h-4 w-4 ${tarjeta.tipo === 'credito' ? 'text-purple-600 dark:text-purple-400' : 'text-green-600 dark:text-green-400'}`} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-sm sm:text-base truncate">{tarjeta.nombre}</p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                      <Building2 className="h-3 w-3" />
+                      {tarjeta.banco}
+                    </p>
+                  </div>
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -352,37 +362,62 @@ export default function TarjetasPage() {
                 </DropdownMenu>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Banco</p>
-                  <p className="font-medium">{tarjeta.banco}</p>
+            <CardContent className="pt-0">
+              <div className="space-y-3 sm:space-y-4">
+                {/* Información principal */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <DollarSign className="h-3 w-3" />
+                      Límite
+                    </p>
+                    <p className="font-semibold text-sm">{formatCurrency(tarjeta.limite)}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Tipo</p>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      tarjeta.tipo === 'credito' 
+                        ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' 
+                        : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                    }`}>
+                      {tarjeta.tipo === 'credito' ? 'Crédito' : 'Débito'}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Límite</p>
-                  <p className="font-medium">{formatCurrency(tarjeta.limite)}</p>
+
+                {/* Saldos */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <p className="text-xs text-muted-foreground">Saldo Usado</p>
+                    <p className="font-semibold text-sm text-orange-600">{formatCurrency(tarjeta.saldoUsado)}</p>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                    <div 
+                      className="bg-orange-500 h-1.5 rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min((tarjeta.saldoUsado / tarjeta.limite) * 100, 100)}%` }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p className="text-xs text-muted-foreground">Disponible</p>
+                    <p className="font-semibold text-sm text-green-600">{formatCurrency(tarjeta.saldoDisponible)}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Saldo Usado</p>
-                  <p className="font-medium text-orange-600">{formatCurrency(tarjeta.saldoUsado)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Saldo Disponible</p>
-                  <p className="font-medium text-green-600">{formatCurrency(tarjeta.saldoDisponible)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Tipo</p>
-                  <p className="font-medium capitalize">{tarjeta.tipo}</p>
-                </div>
+
+                {/* Información de crédito (solo para tarjetas de crédito) */}
                 {tarjeta.tipo === 'credito' && tarjeta.diaCierre && tarjeta.diaVencimiento && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Cierre</p>
-                      <p className="font-medium">Día {tarjeta.diaCierre}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Vencimiento</p>
-                      <p className="font-medium">Día {tarjeta.diaVencimiento}</p>
+                  <div className="pt-2 border-t border-border/50">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          Cierre
+                        </p>
+                        <p className="font-medium text-sm">Día {tarjeta.diaCierre}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Vencimiento</p>
+                        <p className="font-medium text-sm">Día {tarjeta.diaVencimiento}</p>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -392,6 +427,14 @@ export default function TarjetasPage() {
         ))}
       </div>
 
+      {/* Mensaje cuando no hay tarjetas */}
+      {tarjetasOrdenadas.length === 0 && (
+        <div className="text-center py-8">
+          <CreditCard className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+          <p className="text-muted-foreground">No hay tarjetas para mostrar</p>
+        </div>
+      )}
+
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px] max-w-[95vw] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -399,45 +442,48 @@ export default function TarjetasPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label className="text-sm sm:text-base">Nombre de la Tarjeta</label>
+              <label className="text-sm sm:text-base font-medium">Nombre de la Tarjeta</label>
               <Input
                 value={nuevaTarjeta.nombre}
                 onChange={(e) => setNuevaTarjeta({...nuevaTarjeta, nombre: e.target.value})}
                 placeholder="Ej: Visa Gold"
+                className="focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm sm:text-base">Banco</label>
+              <label className="text-sm sm:text-base font-medium">Banco</label>
               <Input
                 value={nuevaTarjeta.banco}
                 onChange={(e) => setNuevaTarjeta({...nuevaTarjeta, banco: e.target.value})}
                 placeholder="Ej: Banco Nación"
+                className="focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm sm:text-base">Tipo de Tarjeta</label>
+              <label className="text-sm sm:text-base font-medium">Tipo de Tarjeta</label>
               <select
                 value={nuevaTarjeta.tipo}
                 onChange={(e) => setNuevaTarjeta({...nuevaTarjeta, tipo: e.target.value as "credito" | "debito"})}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="credito">Crédito</option>
                 <option value="debito">Débito</option>
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm sm:text-base">{nuevaTarjeta.tipo === 'credito' ? 'Límite de Crédito' : 'Saldo Disponible'}</label>
+              <label className="text-sm sm:text-base font-medium">{nuevaTarjeta.tipo === 'credito' ? 'Límite de Crédito' : 'Saldo Disponible'}</label>
               <Input
                 type="number"
                 value={nuevaTarjeta.limite}
                 onChange={(e) => setNuevaTarjeta({...nuevaTarjeta, limite: e.target.value})}
                 placeholder="0.00"
+                className="focus:ring-2 focus:ring-blue-500"
               />
             </div>
             {nuevaTarjeta.tipo === 'credito' && (
               <>
                 <div className="space-y-2">
-                  <label className="text-sm sm:text-base">Día de Cierre</label>
+                  <label className="text-sm sm:text-base font-medium">Día de Cierre</label>
                   <Input
                     type="number"
                     min="1"
@@ -445,13 +491,14 @@ export default function TarjetasPage() {
                     value={nuevaTarjeta.diaCierre}
                     onChange={(e) => setNuevaTarjeta({...nuevaTarjeta, diaCierre: e.target.value})}
                     placeholder="Ej: 15"
+                    className="focus:ring-2 focus:ring-blue-500"
                   />
                   <p className="text-xs text-muted-foreground">
                     Día del mes en que cierra el resumen de la tarjeta
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm sm:text-base">Día de Vencimiento</label>
+                  <label className="text-sm sm:text-base font-medium">Día de Vencimiento</label>
                   <Input
                     type="number"
                     min="1"
@@ -459,6 +506,7 @@ export default function TarjetasPage() {
                     value={nuevaTarjeta.diaVencimiento}
                     onChange={(e) => setNuevaTarjeta({...nuevaTarjeta, diaVencimiento: e.target.value})}
                     placeholder="Ej: 25"
+                    className="focus:ring-2 focus:ring-blue-500"
                   />
                   <p className="text-xs text-muted-foreground">
                     Día del mes en que vence el pago
@@ -467,7 +515,7 @@ export default function TarjetasPage() {
               </>
             )}
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
             <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:w-auto">
               Cancelar
             </Button>

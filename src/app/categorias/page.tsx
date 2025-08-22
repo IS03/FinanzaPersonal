@@ -4,12 +4,11 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Toast, useToast } from "@/components/ui/toast"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { MoreHorizontal, Plus, Pencil, Trash } from "lucide-react"
+import { MoreHorizontal, Plus, Pencil, Trash, Tag, FolderOpen } from "lucide-react"
 import { validarCamposObligatorios } from "@/lib/validations"
 import { useCategorias } from "@/app/context/CategoriasContext"
 import { EmojiPicker } from "@/components/ui/emoji-picker"
@@ -116,95 +115,122 @@ export default function CategoriasPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold tracking-tight">Categorías</h2>
-        <Button onClick={abrirDialogoAgregar}>
+    <div className="space-y-3 sm:space-y-6 px-2 sm:px-0">
+      {/* Header mejorado para móvil */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <h2 className="text-xl sm:text-3xl font-bold tracking-tight">Categorías</h2>
+        <Button onClick={abrirDialogoAgregar} className="w-full sm:w-auto shadow-sm hover:shadow-md transition-shadow">
           <Plus className="h-4 w-4 mr-2" />
           Agregar Categoría
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Lista de Categorías</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Emoji</TableHead>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {categorias.map((categoria) => (
-                <TableRow key={categoria.id}>
-                  <TableCell className="text-2xl">{categoria.emoji}</TableCell>
-                  <TableCell>{categoria.nombre}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => abrirDialogoEditar(categoria)}>
-                          <Pencil className="h-4 w-4 mr-2" />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => abrirConfirmacionEliminar(categoria)}>
-                          <Trash className="h-4 w-4 mr-2" />
-                          Eliminar
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {/* Grid de categorías mejorado */}
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {categorias.map((categoria) => (
+          <Card key={categoria.id} className="group hover:shadow-lg transition-all duration-200 border-l-4 border-l-purple-500 hover:border-l-purple-600">
+            <CardHeader className="pb-3 sm:pb-4">
+              <CardTitle className="flex justify-between items-start sm:items-center gap-2">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className="p-2 rounded-full bg-purple-100 dark:bg-purple-900/20 text-2xl">
+                    {categoria.emoji}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-sm sm:text-base truncate">{categoria.nombre}</p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                      <Tag className="h-3 w-3" />
+                      Categoría
+                    </p>
+                  </div>
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => abrirDialogoEditar(categoria)}>
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Editar
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => abrirConfirmacionEliminar(categoria)}>
+                      <Trash className="h-4 w-4 mr-2" />
+                      Eliminar
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-1 rounded-full bg-purple-50 dark:bg-purple-950/30">
+                    <FolderOpen className="h-3 w-3 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">ID: {categoria.id}</span>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {categoria.nombre.length} caracteres
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Mensaje cuando no hay categorías */}
+      {categorias.length === 0 && (
+        <div className="text-center py-8">
+          <Tag className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+          <p className="text-muted-foreground">No hay categorías para mostrar</p>
+          <p className="text-sm text-muted-foreground mt-2">Agrega tu primera categoría para organizar tus gastos</p>
+        </div>
+      )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px] max-w-[95vw] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{isEditMode ? "Editar Categoría" : "Agregar Nueva Categoría"}</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl flex items-center gap-2">
+              <Tag className="h-5 w-5" />
+              {isEditMode ? "Editar Categoría" : "Agregar Nueva Categoría"}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label>Nombre</label>
+              <label className="text-sm sm:text-base font-medium">Nombre de la Categoría</label>
               <Input
                 value={nuevaCategoria.nombre}
                 onChange={(e) => setNuevaCategoria({...nuevaCategoria, nombre: e.target.value})}
                 placeholder="Ej: Alimentación"
+                className="focus:ring-2 focus:ring-purple-500"
               />
             </div>
             <div className="space-y-2">
-              <label>Emoji</label>
-              <div className="flex items-center gap-2">
-                <div className="text-2xl p-2 border rounded w-12 h-12 flex items-center justify-center">
+              <label className="text-sm sm:text-base font-medium">Emoji</label>
+              <div className="flex items-center gap-3">
+                <div className="text-2xl p-3 border rounded-lg w-16 h-16 flex items-center justify-center bg-purple-50 dark:bg-purple-950/30">
                   {nuevaCategoria.emoji}
                 </div>
                 <EmojiPicker 
                   onSelect={(emoji) => setNuevaCategoria({...nuevaCategoria, emoji})}
                   trigger={
-                    <Button variant="outline">
+                    <Button variant="outline" className="focus:ring-2 focus:ring-purple-500">
                       Cambiar Emoji
                     </Button>
                   }
                 />
               </div>
+              <p className="text-xs text-muted-foreground">
+                Selecciona un emoji que represente mejor tu categoría
+              </p>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:w-auto">
               Cancelar
             </Button>
-            <Button onClick={guardarCategoria}>
+            <Button onClick={guardarCategoria} className="w-full sm:w-auto">
               {isEditMode ? "Actualizar" : "Agregar"}
             </Button>
           </DialogFooter>

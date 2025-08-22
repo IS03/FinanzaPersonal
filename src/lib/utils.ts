@@ -15,18 +15,34 @@ export function formatCurrency(amount: number): string {
 }
 
 export function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('es-AR', {
+  const date = new Date(dateString)
+  const monthName = date.toLocaleDateString('es-AR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   })
+  // Capitalizar el nombre del mes
+  const parts = monthName.split(' ')
+  if (parts.length >= 3) {
+    parts[1] = parts[1].charAt(0).toUpperCase() + parts[1].slice(1)
+    return parts.join(' ')
+  }
+  return monthName
 }
 
 export function getCurrentMonth(): string {
-  return new Date().toLocaleDateString('es-AR', {
+  const date = new Date()
+  const monthName = date.toLocaleDateString('es-AR', {
     year: 'numeric',
     month: 'long'
   })
+  // Capitalizar el nombre del mes
+  const parts = monthName.split(' ')
+  if (parts.length >= 2) {
+    parts[0] = parts[0].charAt(0).toUpperCase() + parts[0].slice(1)
+    return parts.join(' ')
+  }
+  return monthName
 }
 
 export function calculateMonthlyStats(gastos: Array<{ monto: number }>, ingresos: Array<{ monto: number }>) {

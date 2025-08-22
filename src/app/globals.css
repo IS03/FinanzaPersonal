@@ -563,19 +563,78 @@ select option {
 /* Ancho fijo para todos los filtros */
 .filter-select-trigger {
   min-width: 180px !important;
-  width: 180px !important;
+  width: 100% !important;
 }
 
 /* Para filtros más anchos si es necesario */
 .filter-select-trigger-wide {
   min-width: 220px !important;
-  width: 220px !important;
+  width: 100% !important;
 }
 
 /* Para filtros de categorías que pueden ser más anchos */
 .filter-select-trigger-category {
   min-width: 200px !important;
-  width: 200px !important;
+  width: 100% !important;
+}
+
+/* Asegurar que todos los filtros ocupen el ancho completo del contenedor */
+.filter-select-trigger,
+.filter-select-trigger-wide,
+.filter-select-trigger-category {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Mejorar la apariencia de las tablas */
+.table-container {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Estilos para los headers de tabla */
+.table-header {
+  background-color: hsl(var(--muted));
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+/* Mejorar el espaciado de las celdas de tabla */
+.table-cell {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+}
+
+/* Mejorar responsividad de tablas en móviles */
+@media (max-width: 640px) {
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Asegurar que las tablas no se desborden en móviles */
+  table {
+    min-width: 100%;
+    table-layout: auto;
+  }
+  
+  /* Mejorar el espaciado de las celdas de tabla */
+  td, th {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+  
+  /* Asegurar que los títulos de columna tengan suficiente espacio */
+  th {
+    font-weight: 600;
+    background-color: hsl(var(--muted));
+    padding: 0.75rem 0.5rem;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: hsl(var(--muted-foreground));
+  }
 }
 
 /* Alternativa: scrollbar muy sutil */
@@ -677,7 +736,85 @@ select option {
 
 /* Transiciones suaves para el cambio de tema */
 * {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+/* Transiciones más rápidas en dispositivos móviles */
+@media (max-width: 768px) {
+  * {
+    transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease;
+  }
+}
+
+/* Deshabilitar transiciones en dispositivos que prefieren movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* Configuración para barras de iOS */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari */
+  body {
+    /* Extender el contenido hasta los bordes */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  /* Asegurar que el contenido principal use toda la pantalla */
+  html {
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  body {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  /* Configurar colores de las barras de iOS para modo claro */
+  :root {
+    --ios-status-bar-bg: #ffffff;
+    --ios-nav-bar-bg: #ffffff;
+  }
+  
+  /* Configurar colores de las barras de iOS para modo oscuro */
+  .dark {
+    --ios-status-bar-bg: #1a1a1a;
+    --ios-nav-bar-bg: #1a1a1a;
+  }
+  
+  /* Aplicar colores a las barras de iOS */
+  body {
+    background-color: var(--ios-status-bar-bg);
+  }
+  
+  /* Asegurar que el header tenga el color correcto */
+  .border-b {
+    background-color: var(--ios-status-bar-bg);
+  }
+}
+
+/* Optimizar transiciones de colores en dispositivos móviles */
+@media (max-width: 768px) {
+  .transition-colors {
+    transition-duration: 0.1s !important;
+  }
+  
+  /* Transiciones más rápidas para elementos interactivos */
+  button, a, [role="button"] {
+    transition-duration: 0.1s !important;
+  }
+  
+  /* Transiciones instantáneas para cambios de tema */
+  .theme-toggle,
+  .theme-toggle * {
+    transition-duration: 0.05s !important;
+  }
 }
 
 /* Mejoras para el modo oscuro */
@@ -704,6 +841,13 @@ select option {
 
 .theme-toggle {
   animation: themeToggleIn 0.4s ease-out;
+}
+
+/* Animación más rápida en dispositivos móviles */
+@media (max-width: 768px) {
+  .theme-toggle {
+    animation: themeToggleIn 0.2s ease-out;
+  }
 }
 
 /* Animaciones para notificaciones */
@@ -735,6 +879,17 @@ select option {
 
 .slide-in-from-right-2 {
   animation: slideInFromRight 0.3s ease-out forwards;
+}
+
+/* Animaciones más rápidas en dispositivos móviles */
+@media (max-width: 768px) {
+  .animate-in {
+    animation: slideInFromRight 0.15s ease-out forwards;
+  }
+  
+  .slide-in-from-right-2 {
+    animation: slideInFromRight 0.15s ease-out forwards;
+  }
 }
 
 /* Mejoras para el modo oscuro en componentes específicos */
@@ -781,6 +936,52 @@ select option {
   background-color: hsl(var(--background));
 }
 
+/* Mejorar estilos de tabs para modo oscuro */
+.dark [data-slot="tabs-list"] {
+  background-color: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
+}
+
+.dark [data-slot="tabs-trigger"] {
+  color: hsl(var(--muted-foreground));
+  transition: all 0.2s ease-in-out;
+}
+
+.dark [data-slot="tabs-trigger"][data-state="active"] {
+  background-color: hsl(var(--card));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.dark [data-slot="tabs-trigger"]:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+/* Estilos para modo claro */
+[data-slot="tabs-list"] {
+  background-color: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
+}
+
+[data-slot="tabs-trigger"] {
+  color: hsl(var(--muted-foreground));
+  transition: all 0.2s ease-in-out;
+}
+
+[data-slot="tabs-trigger"][data-state="active"] {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+[data-slot="tabs-trigger"]:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
 /* Mejorar la separación visual entre tabs y contenido */
 [data-slot="tabs-list"] + [data-slot="tabs-content"] {
   margin-top: 16px;
@@ -794,11 +995,6 @@ select option {
 }
 
 /* Prevenir superposición en modo oscuro */
-.dark [data-slot="tabs-list"] {
-  background-color: hsl(var(--muted));
-  border-color: hsl(var(--border));
-}
-
 .dark [data-slot="tabs-content"] {
   background-color: hsl(var(--background));
 }
@@ -854,10 +1050,7 @@ select option {
   color: hsl(var(--foreground));
 }
 
-.dark [data-slot="tabs-list"] {
-  background-color: #2a2a2a;
-  border-color: #404040;
-}
+
 
 .dark [data-slot="tabs-content"] {
   background-color: #1a1a1a;
@@ -870,4 +1063,54 @@ select option {
 
 .dark [data-slot="tabs-content"] .empty-state {
   background-color: #1a1a1a;
+}
+
+/* Animaciones para el menú móvil */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+/* Animación para el backdrop del menú móvil */
+.mobile-menu-backdrop {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.mobile-menu-backdrop.closing {
+  animation: fadeOut 0.3s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }

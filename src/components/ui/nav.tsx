@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { Menu, X } from "lucide-react"
 import { Button } from "./button"
@@ -45,14 +45,14 @@ export function MainNav() {
   ]
 
   // Función para cerrar el menú con animación
-  const closeMenu = useCallback(() => {
+  const closeMenu = () => {
     setIsClosing(true)
     setTimeout(() => {
       setIsMobileMenuOpen(false)
       setIsClosing(false)
       document.body.style.overflow = 'unset'
     }, 300)
-  }, [])
+  }
 
   // Función para abrir el menú
   const openMenu = () => {
@@ -61,12 +61,21 @@ export function MainNav() {
     document.body.style.overflow = 'hidden'
   }
 
+  // Función para manejar el clic del botón del menú
+  const handleMenuClick = () => {
+    if (isMobileMenuOpen) {
+      closeMenu()
+    } else {
+      openMenu()
+    }
+  }
+
   // Cerrar menú al cambiar de ruta
   useEffect(() => {
     if (isMobileMenuOpen) {
       closeMenu()
     }
-  }, [pathname, isMobileMenuOpen, closeMenu])
+  }, [pathname])
 
   // Prevenir scroll del body cuando el menú está abierto
   useEffect(() => {
@@ -107,7 +116,7 @@ export function MainNav() {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => isMobileMenuOpen ? closeMenu() : openMenu()}
+          onClick={handleMenuClick}
           className="h-10 w-10 menu-button flex items-center justify-center"
           aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
         >
@@ -133,30 +142,30 @@ export function MainNav() {
           
           {/* Menu Panel */}
           <div className={cn(
-            "absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-background border-l mobile-menu-panel",
+            "absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-background border-l shadow-lg mobile-menu-panel",
             isClosing && "closing"
           )}>
             <div className="flex flex-col h-full">
-                                       {/* Header */}
-                         <div className="flex items-center justify-between p-4 border-b menu-header">
-                           <h2 className="text-lg font-semibold">Menú</h2>
-                           <div className="flex items-center gap-2">
-                             <ThemeToggle />
-                             <Button
-                               variant="ghost"
-                               size="icon"
-                               onClick={closeMenu}
-                               className="h-8 w-8 menu-button flex items-center justify-center"
-                             >
-                               <X className="h-4 w-4 menu-icon" />
-                             </Button>
-                           </div>
-                         </div>
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b menu-header">
+                <h2 className="text-lg font-semibold">Menú</h2>
+                <div className="flex items-center gap-2">
+                  <ThemeToggle />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={closeMenu}
+                    className="h-8 w-8"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
               
               {/* Navigation Links */}
               <nav className="flex-1 p-4 overflow-y-auto">
                 <div className="space-y-2">
-                  {links.map((link) => {
+                  {links.map((link, index) => {
                     const isActive = pathname === link.href
                     return (
                       <Link
@@ -164,7 +173,7 @@ export function MainNav() {
                         href={link.href}
                         onClick={closeMenu}
                         className={cn(
-                          "flex items-center px-4 py-3 rounded-lg text-base font-medium menu-link menu-link-item",
+                          "flex items-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 menu-link",
                           isActive
                             ? "bg-primary text-primary-foreground"
                             : "text-muted-foreground hover:text-foreground hover:bg-accent"
@@ -172,7 +181,7 @@ export function MainNav() {
                       >
                         {link.label}
                         {isActive && (
-                          <div className="ml-auto w-2 h-2 bg-primary-foreground rounded-full active-indicator" />
+                          <div className="ml-auto w-2 h-2 bg-primary-foreground rounded-full" />
                         )}
                       </Link>
                     )

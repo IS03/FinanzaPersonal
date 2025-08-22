@@ -5,11 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { formatCurrency, calculateMonthlyStats, cleanDuplicateData } from "@/lib/utils"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { TrendingDown, TrendingUp, CreditCard, DollarSign, Calendar, BarChart3, Receipt, Wallet } from "lucide-react"
 import type { Gasto, Tarjeta, Ingreso } from "@/app/types/types"
+import { useGastos } from "@/app/context/GastosContext"
+import { useTarjetas } from "@/app/context/TarjetasContext"
 
 export default function Home() {
-  const [gastos, setGastos] = useState<Gasto[]>([])
-  const [tarjetas, setTarjetas] = useState<Tarjeta[]>([])
+  const { gastos } = useGastos()
+  const { tarjetas } = useTarjetas()
   const [ingresos, setIngresos] = useState<Ingreso[]>([])
   const [selectedMonth, setSelectedMonth] = useState<number | null>(new Date().getMonth())
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
@@ -17,35 +20,7 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      const savedGastos = JSON.parse(localStorage.getItem('gastos') || '[]')
-      const savedTarjetas = JSON.parse(localStorage.getItem('tarjetas') || '[]')
       const savedIngresos = JSON.parse(localStorage.getItem('ingresos') || '[]')
-      
-      // Validar gastos
-      const validGastos = savedGastos.filter((gasto: unknown) => 
-        gasto && typeof gasto === 'object' && 
-        gasto !== null &&
-        'id' in gasto && typeof (gasto as Record<string, unknown>).id === 'number' &&
-        'descripcion' in gasto && typeof (gasto as Record<string, unknown>).descripcion === 'string' &&
-        'monto' in gasto && typeof (gasto as Record<string, unknown>).monto === 'number' &&
-        'categoriaId' in gasto && typeof (gasto as Record<string, unknown>).categoriaId === 'number' &&
-        'medioPago' in gasto && typeof (gasto as Record<string, unknown>).medioPago === 'string' &&
-        'fecha' in gasto && typeof (gasto as Record<string, unknown>).fecha === 'string'
-      ) as Gasto[]
-      
-      // Validar tarjetas
-      const validTarjetas = savedTarjetas.filter((tarjeta: unknown) => 
-        tarjeta && typeof tarjeta === 'object' && 
-        tarjeta !== null &&
-        'id' in tarjeta && typeof (tarjeta as Record<string, unknown>).id === 'number' && 
-        'nombre' in tarjeta && typeof (tarjeta as Record<string, unknown>).nombre === 'string' && 
-        'banco' in tarjeta && typeof (tarjeta as Record<string, unknown>).banco === 'string' &&
-        'limite' in tarjeta && typeof (tarjeta as Record<string, unknown>).limite === 'number' &&
-        'diaCierre' in tarjeta && typeof (tarjeta as Record<string, unknown>).diaCierre === 'number' &&
-        'diaVencimiento' in tarjeta && typeof (tarjeta as Record<string, unknown>).diaVencimiento === 'number' &&
-        'saldoUsado' in tarjeta && typeof (tarjeta as Record<string, unknown>).saldoUsado === 'number' &&
-        'saldoDisponible' in tarjeta && typeof (tarjeta as Record<string, unknown>).saldoDisponible === 'number'
-      ) as Tarjeta[]
       
       // Validar ingresos
       const validIngresos = savedIngresos.filter((ingreso: unknown) => 
@@ -58,11 +33,7 @@ export default function Home() {
         'fuente' in ingreso && typeof (ingreso as Record<string, unknown>).fuente === 'string'
       ) as Ingreso[]
       
-      const cleanedGastos = cleanDuplicateData(validGastos)
-      const cleanedTarjetas = cleanDuplicateData(validTarjetas)
       const cleanedIngresos = cleanDuplicateData(validIngresos)
-      setGastos(cleanedGastos)
-      setTarjetas(cleanedTarjetas)
       setIngresos(cleanedIngresos)
     } catch (error) {
       console.error("Error al cargar datos:", error)
@@ -197,7 +168,7 @@ export default function Home() {
       const fecha = new Date(2024, i)
       return {
         value: i.toString(),
-        label: fecha.toLocaleDateString('es', { month: 'long' })
+        label: fecha.toLocaleDateString('es', { month: 'long' }).charAt(0).toUpperCase() + fecha.toLocaleDateString('es', { month: 'long' }).slice(1)
       }
     })
   ]
@@ -221,15 +192,16 @@ export default function Home() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Resumen Financiero</h2>
+    <div className="space-y-3 sm:space-y-6 px-2 sm:px-0">
+      {/* Header mejorado para móvil */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <h2 className="text-xl sm:text-3xl font-bold tracking-tight">Resumen Financiero</h2>
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
           <Select 
             value={selectedMonth === null ? 'year' : selectedMonth.toString()} 
             onValueChange={(v) => setSelectedMonth(v === 'year' ? null : parseInt(v))}
           >
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px] shadow-sm">
               <SelectValue placeholder="Selecciona mes" />
             </SelectTrigger>
             <SelectContent className="max-h-[100px] scrollbar-hidden">
@@ -245,7 +217,7 @@ export default function Home() {
             value={selectedYear.toString()} 
             onValueChange={(v) => setSelectedYear(parseInt(v))}
           >
-            <SelectTrigger className="w-full sm:w-[120px]">
+            <SelectTrigger className="w-full sm:w-[120px] shadow-sm">
               <SelectValue placeholder="Selecciona año" />
             </SelectTrigger>
             <SelectContent className="max-h-[100px] scrollbar-hidden">
@@ -259,82 +231,115 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Cards de estadísticas mejoradas */}
       <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">
+        <Card className="group hover:shadow-lg transition-all duration-200 border-l-4 border-l-red-500 hover:border-l-red-600">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 sm:pb-4">
+            <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-2">
+              <div className="p-1.5 rounded-full bg-red-100 dark:bg-red-900/20">
+                <TrendingDown className="h-3 w-3 text-red-600 dark:text-red-400" />
+              </div>
               {selectedMonth === null ? 'Gastos del Año' : 'Gastos del Mes'}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-xl sm:text-2xl font-bold text-red-600">
               {formatCurrency(stats.totalGastos)}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+              <Receipt className="h-3 w-3" />
               {gastosDelMes.length} gastos registrados
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">
-              {selectedMonth === null ? 'Cuotas Pendientes del Año' : 'Cuotas Pendientes'}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl sm:text-2xl font-bold text-orange-600">
-              {formatCurrency(cuotasPendientes)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {selectedMonth === null ? 'Vencimientos del año' : 'Vencimientos del mes'}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">
+        <Card className="group hover:shadow-lg transition-all duration-200 border-l-4 border-l-green-500 hover:border-l-green-600">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 sm:pb-4">
+            <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-2">
+              <div className="p-1.5 rounded-full bg-green-100 dark:bg-green-900/20">
+                <TrendingUp className="h-3 w-3 text-green-600 dark:text-green-400" />
+              </div>
               {selectedMonth === null ? 'Ingresos del Año' : 'Ingresos del Mes'}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-xl sm:text-2xl font-bold text-green-600">
               {formatCurrency(stats.totalIngresos)}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+              <Wallet className="h-3 w-3" />
               {ingresosDelMes.length} ingresos registrados
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">
+        <Card className="group hover:shadow-lg transition-all duration-200 border-l-4 border-l-orange-500 hover:border-l-orange-600">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 sm:pb-4">
+            <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-2">
+              <div className="p-1.5 rounded-full bg-orange-100 dark:bg-orange-900/20">
+                <CreditCard className="h-3 w-3 text-orange-600 dark:text-orange-400" />
+              </div>
+              {selectedMonth === null ? 'Cuotas Pendientes del Año' : 'Cuotas Pendientes'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-xl sm:text-2xl font-bold text-orange-600">
+              {formatCurrency(cuotasPendientes)}
+            </div>
+            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+              <Calendar className="h-3 w-3" />
+              {selectedMonth === null ? 'Vencimientos del año' : 'Vencimientos del mes'}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className={`group hover:shadow-lg transition-all duration-200 border-l-4 ${
+          stats.balance >= 0 
+            ? 'border-l-green-500 hover:border-l-green-600' 
+            : 'border-l-red-500 hover:border-l-red-600'
+        }`}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 sm:pb-4">
+            <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-2">
+              <div className={`p-1.5 rounded-full ${
+                stats.balance >= 0 
+                  ? 'bg-green-100 dark:bg-green-900/20' 
+                  : 'bg-red-100 dark:bg-red-900/20'
+              }`}>
+                <BarChart3 className={`h-3 w-3 ${
+                  stats.balance >= 0 
+                    ? 'text-green-600 dark:text-green-400' 
+                    : 'text-red-600 dark:text-red-400'
+                }`} />
+              </div>
               {selectedMonth === null ? 'Balance del Año' : 'Balance del Mes'}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className={`text-xl sm:text-2xl font-bold ${stats.balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {formatCurrency(stats.balance)}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+              <DollarSign className="h-3 w-3" />
               {stats.balance >= 0 ? 'Superávit' : 'Déficit'}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">
+        <Card className="group hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500 hover:border-l-blue-600">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 sm:pb-4">
+            <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-2">
+              <div className="p-1.5 rounded-full bg-blue-100 dark:bg-blue-900/20">
+                <CreditCard className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+              </div>
               {selectedMonth === null ? 'Cuotas Pagadas del Año' : 'Cuotas Pagadas'}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-xl sm:text-2xl font-bold text-blue-600">
               {formatCurrency(cuotasPagadas)}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+              <Receipt className="h-3 w-3" />
               {selectedMonth === null ? 'Pagadas del año' : 'Pagadas del mes'}
             </p>
           </CardContent>
@@ -342,21 +347,28 @@ export default function Home() {
       </div>
 
       <Tabs defaultValue="pendientes" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="pendientes">Cuotas Pendientes</TabsTrigger>
-          <TabsTrigger value="pagadas">Cuotas Pagadas</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 shadow-sm">
+          <TabsTrigger value="pendientes" className="flex items-center gap-2">
+            <CreditCard className="h-4 w-4" />
+            Cuotas Pendientes
+          </TabsTrigger>
+          <TabsTrigger value="pagadas" className="flex items-center gap-2">
+            <Receipt className="h-4 w-4" />
+            Cuotas Pagadas
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="pendientes" className="space-y-4">
           {tarjetas.length === 0 ? (
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-center text-muted-foreground text-sm sm:text-base">
+            <Card className="group hover:shadow-lg transition-all duration-200">
+              <CardContent className="pt-6 text-center">
+                <CreditCard className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+                <p className="text-muted-foreground text-sm sm:text-base">
                   No hay tarjetas registradas. Ve a la sección &quot;Tarjetas&quot; para agregar tarjetas de crédito.
                 </p>
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-4">
+            <div className="grid gap-3 sm:gap-4">
               {tarjetas.filter((tarjeta, index, self) => 
                 index === self.findIndex(t => t.id === tarjeta.id)
               ).map(tarjeta => {
@@ -402,16 +414,24 @@ export default function Home() {
                 if (cuotasPendientesTarjeta === 0) return null
 
                 return (
-                  <Card key={tarjeta.id}>
-                    <CardHeader>
+                  <Card key={tarjeta.id} className="group hover:shadow-lg transition-all duration-200 border-l-4 border-l-orange-500 hover:border-l-orange-600">
+                    <CardHeader className="pb-3 sm:pb-4">
                       <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                        <span className="text-sm sm:text-base">{tarjeta.nombre} - {tarjeta.banco}</span>
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <div className="p-1.5 rounded-full bg-orange-100 dark:bg-orange-900/20">
+                            <CreditCard className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-sm sm:text-base truncate">{tarjeta.nombre}</p>
+                            <p className="text-xs text-muted-foreground">{tarjeta.banco}</p>
+                          </div>
+                        </div>
                         <span className="text-base sm:text-lg text-orange-600 font-semibold">
                           {formatCurrency(cuotasPendientesTarjeta)}
                         </span>
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                       <div className="space-y-2">
                         {gastosDeTarjeta.map(gasto => {
                           try {
@@ -448,8 +468,8 @@ export default function Home() {
                             if (cuotasPendientes.length === 0) return null
 
                             return (
-                              <div key={`gasto-${gasto.id}-${selectedMonth ?? 'year'}-${selectedYear}`} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 sm:gap-0 text-xs sm:text-sm">
-                                <span className="break-words">{gasto.descripcion}</span>
+                              <div key={`gasto-${gasto.id}-${selectedMonth ?? 'year'}-${selectedYear}`} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 sm:gap-0 text-xs sm:text-sm p-2 rounded-lg bg-orange-50 dark:bg-orange-950/20">
+                                <span className="break-words flex-1">{gasto.descripcion}</span>
                                 <span className="text-orange-600 font-medium">
                                   {formatCurrency(cuotasPendientes.reduce((acc, cuota) => acc + cuota.monto, 0))}
                                 </span>
@@ -471,15 +491,16 @@ export default function Home() {
 
         <TabsContent value="pagadas" className="space-y-4">
           {tarjetas.length === 0 ? (
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-center text-muted-foreground text-sm sm:text-base">
+            <Card className="group hover:shadow-lg transition-all duration-200">
+              <CardContent className="pt-6 text-center">
+                <CreditCard className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+                <p className="text-muted-foreground text-sm sm:text-base">
                   No hay tarjetas registradas. Ve a la sección &quot;Tarjetas&quot; para agregar tarjetas de crédito.
                 </p>
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-4">
+            <div className="grid gap-3 sm:gap-4">
               {tarjetas.filter((tarjeta, index, self) => 
                 index === self.findIndex(t => t.id === tarjeta.id)
               ).map(tarjeta => {
@@ -525,16 +546,24 @@ export default function Home() {
                 if (cuotasPagadasTarjeta === 0) return null
 
                 return (
-                  <Card key={tarjeta.id}>
-                    <CardHeader>
+                  <Card key={tarjeta.id} className="group hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500 hover:border-l-blue-600">
+                    <CardHeader className="pb-3 sm:pb-4">
                       <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                        <span className="text-sm sm:text-base">{tarjeta.nombre} - {tarjeta.banco}</span>
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <div className="p-1.5 rounded-full bg-blue-100 dark:bg-blue-900/20">
+                            <CreditCard className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-sm sm:text-base truncate">{tarjeta.nombre}</p>
+                            <p className="text-xs text-muted-foreground">{tarjeta.banco}</p>
+                          </div>
+                        </div>
                         <span className="text-base sm:text-lg text-blue-600 font-semibold">
                           {formatCurrency(cuotasPagadasTarjeta)}
                         </span>
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                       <div className="space-y-2">
                         {gastosDeTarjeta.map(gasto => {
                           try {
@@ -571,8 +600,8 @@ export default function Home() {
                             if (cuotasPagadasDelPeriodo.length === 0) return null
 
                             return (
-                              <div key={`gasto-pagado-${gasto.id}-${selectedMonth ?? 'year'}-${selectedYear}`} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 sm:gap-0 text-xs sm:text-sm">
-                                <span className="break-words">{gasto.descripcion}</span>
+                              <div key={`gasto-pagado-${gasto.id}-${selectedMonth ?? 'year'}-${selectedYear}`} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 sm:gap-0 text-xs sm:text-sm p-2 rounded-lg bg-blue-50 dark:bg-blue-950/20">
+                                <span className="break-words flex-1">{gasto.descripcion}</span>
                                 <span className="text-blue-600 font-medium">
                                   {formatCurrency(cuotasPagadasDelPeriodo.reduce((acc, cuota) => acc + cuota.monto, 0))}
                                 </span>

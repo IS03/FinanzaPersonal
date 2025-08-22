@@ -10,6 +10,7 @@ import { Logo } from "@/components/ui/logo";
 import { GastoModalProvider } from "./context/GastoModalContext";
 import { TarjetasProvider } from "./context/TarjetasContext";
 import { CategoriasProvider } from "./context/CategoriasContext";
+import { GastosProvider } from "./context/GastosContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { APP_CONFIG } from "@/lib/config";
 
@@ -39,7 +40,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: APP_CONFIG.name,
   },
   manifest: '/manifest.json',
@@ -47,6 +48,8 @@ export const metadata: Metadata = {
     width: 'device-width',
     initialScale: 1,
     maximumScale: 1,
+    userScalable: false,
+    viewportFit: 'cover',
   },
   openGraph: {
     type: 'website',
@@ -80,11 +83,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        {/* Meta tags para controlar colores de barras en iOS */}
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+      </head>
       <body className={inter.className}>
         <ThemeProvider>
           <TarjetasProvider>
             <CategoriasProvider>
-              <GastoModalProvider>
+              <GastosProvider>
+                <GastoModalProvider>
                 <div className="border-b">
                   <div className="flex h-16 items-center justify-between px-4">
                     <div className="logo-container">
@@ -102,7 +113,8 @@ export default function RootLayout({
                 <FloatingActionButton />
                 <GastoModal />
                 <ThemeNotification />
-              </GastoModalProvider>
+                              </GastoModalProvider>
+              </GastosProvider>
             </CategoriasProvider>
           </TarjetasProvider>
         </ThemeProvider>

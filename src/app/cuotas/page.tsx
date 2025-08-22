@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { FilterSelect } from "@/components/ui/filter-select"
 import { Toast, useToast } from "@/components/ui/toast"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { formatCurrency, formatDate, cleanDuplicateData } from "@/lib/utils"
 import type { Gasto, Tarjeta } from "@/app/types/types"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CreditCard, Calendar, DollarSign, CheckCircle, Clock, TrendingUp, Filter } from "lucide-react"
 
 export default function CuotasPage() {
   const { toast, showToast, hideToast } = useToast()
@@ -184,9 +184,10 @@ export default function CuotasPage() {
   const cuotasDelMes = obtenerCuotasDelMes()
 
   return (
-    <div className="space-y-4 sm:space-y-6 overflow-y-auto scrollbar-hidden">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Gastos en Cuotas</h2>
+    <div className="space-y-3 sm:space-y-6 px-2 sm:px-0">
+      {/* Header mejorado para móvil */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <h2 className="text-xl sm:text-3xl font-bold tracking-tight">Gastos en Cuotas</h2>
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
           <FilterSelect
             value={selectedMonth.toString()}
@@ -222,210 +223,189 @@ export default function CuotasPage() {
       </div>
 
       <Tabs defaultValue="mes" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="mes">Cuotas del Mes</TabsTrigger>
-          <TabsTrigger value="futuras">Próximas Cuotas</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 shadow-sm">
+          <TabsTrigger value="mes" className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            Cuotas del Mes
+          </TabsTrigger>
+          <TabsTrigger value="futuras" className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" />
+            Próximas Cuotas
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="mes" className="min-h-[300px]">
           {cuotasDelMes.length === 0 ? (
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center text-muted-foreground py-8">
-                  <p className="text-sm sm:text-base">No hay cuotas para el mes seleccionado</p>
-                  <p className="text-xs sm:text-sm mt-2">Intenta seleccionar un mes diferente o agregar gastos en cuotas</p>
-                </div>
+            <Card className="group hover:shadow-lg transition-all duration-200">
+              <CardContent className="pt-6 text-center">
+                <CreditCard className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+                <p className="text-muted-foreground text-sm sm:text-base">No hay cuotas para el mes seleccionado</p>
+                <p className="text-xs sm:text-sm mt-2 text-muted-foreground">Intenta seleccionar un mes diferente o agregar gastos en cuotas</p>
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-4 sm:gap-6">
+            <div className="grid gap-3 sm:gap-4">
               {cuotasDelMes.map(({ tarjeta, cuotas, totalPendiente }) => (
-              <Card key={tarjeta.id}>
-                <CardHeader>
-                  <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                    <span className="text-sm sm:text-base">{tarjeta.nombre} - {tarjeta.banco}</span>
-                    <span className="text-base sm:text-lg text-orange-600 font-semibold">
-                      Pendiente: {formatCurrency(totalPendiente)}
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {/* Vista móvil para cuotas */}
-                  <div className="block sm:hidden space-y-3">
-                    {cuotas.map((cuota) => (
-                      <Card key={`${cuota.gastoId}-${cuota.cuotaIndex}`} className="p-4">
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-start">
-                            <h4 className="font-medium text-sm">{cuota.descripcion}</h4>
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              cuota.pagada 
-                                ? "bg-green-100 text-green-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }`}>
-                              {cuota.pagada ? "Pagada" : "Pendiente"}
-                            </span>
-                          </div>
-                          <div className="text-lg font-bold text-primary">
-                            {formatCurrency(cuota.monto)}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            Vencimiento: {formatDate(cuota.fecha.toISOString())}
-                          </div>
-                          {!cuota.pagada && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => abrirConfirmacionPago(cuota.gastoId, cuota.descripcion, cuota.monto)}
-                              className="w-full"
-                            >
-                              Marcar como Pagada
-                            </Button>
-                          )}
+                <Card key={tarjeta.id} className="group hover:shadow-lg transition-all duration-200 border-l-4 border-l-orange-500 hover:border-l-orange-600">
+                  <CardHeader className="pb-3 sm:pb-4">
+                    <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="p-1.5 rounded-full bg-orange-100 dark:bg-orange-900/20">
+                          <CreditCard className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                         </div>
-                      </Card>
-                    ))}
-                  </div>
-
-                  {/* Vista desktop para cuotas */}
-                  <div className="hidden sm:block">
-                    <div className="rounded-md border">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Descripción</TableHead>
-                            <TableHead>Monto por Cuota</TableHead>
-                            <TableHead>Fecha de Vencimiento</TableHead>
-                            <TableHead>Estado</TableHead>
-                            <TableHead>Acciones</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {cuotas.map((cuota) => (
-                            <TableRow key={`${cuota.gastoId}-${cuota.cuotaIndex}`}>
-                              <TableCell>{cuota.descripcion}</TableCell>
-                              <TableCell>{formatCurrency(cuota.monto)}</TableCell>
-                              <TableCell>{formatDate(cuota.fecha.toISOString())}</TableCell>
-                              <TableCell>
-                                <span className={`px-2 py-1 rounded-full text-xs ${
+                        <div className="min-w-0 flex-1">
+                          <p className="font-semibold text-sm sm:text-base truncate">{tarjeta.nombre}</p>
+                          <p className="text-xs text-muted-foreground">{tarjeta.banco}</p>
+                        </div>
+                      </div>
+                      <span className="text-base sm:text-lg text-orange-600 font-semibold">
+                        Pendiente: {formatCurrency(totalPendiente)}
+                      </span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                      {cuotas.map((cuota) => (
+                        <Card key={`${cuota.gastoId}-${cuota.cuotaIndex}`} className="group hover:shadow-md transition-all duration-200 border-l-4 border-l-purple-500 hover:border-l-purple-600">
+                          <CardHeader className="pb-3 sm:pb-4">
+                            <CardTitle className="flex justify-between items-start sm:items-center gap-2">
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <div className={`p-1.5 rounded-full ${
                                   cuota.pagada 
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-yellow-100 text-yellow-800"
+                                    ? 'bg-green-100 dark:bg-green-900/20' 
+                                    : 'bg-yellow-100 dark:bg-yellow-900/20'
+                                }`}>
+                                  {cuota.pagada ? (
+                                    <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                  ) : (
+                                    <Clock className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                                  )}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-semibold text-sm truncate">{cuota.descripcion}</p>
+                                  <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                                    <Calendar className="h-3 w-3" />
+                                    {formatDate(cuota.fecha.toISOString())}
+                                  </p>
+                                </div>
+                              </div>
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="pt-0">
+                            <div className="space-y-3 sm:space-y-4">
+                              {/* Monto de la cuota */}
+                              <div className="space-y-1">
+                                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <DollarSign className="h-3 w-3" />
+                                  Monto por Cuota
+                                </p>
+                                <p className="text-lg sm:text-xl font-bold text-purple-600">
+                                  {formatCurrency(cuota.monto)}
+                                </p>
+                              </div>
+
+                              {/* Estado */}
+                              <div className="space-y-1">
+                                <p className="text-xs text-muted-foreground">Estado</p>
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                  cuota.pagada 
+                                    ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                                    : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
                                 }`}>
                                   {cuota.pagada ? "Pagada" : "Pendiente"}
                                 </span>
-                              </TableCell>
-                              <TableCell>
-                                {!cuota.pagada && (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => abrirConfirmacionPago(cuota.gastoId, cuota.descripcion, cuota.monto)}
-                                  >
-                                    Marcar como Pagada
-                                  </Button>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+                              </div>
+
+                              {/* Botón de acción */}
+                              {!cuota.pagada && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => abrirConfirmacionPago(cuota.gastoId, cuota.descripcion, cuota.monto)}
+                                  className="w-full"
+                                >
+                                  Marcar como Pagada
+                                </Button>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           )}
         </TabsContent>
 
         <TabsContent value="futuras" className="min-h-[300px]">
-          <Card>
+          <Card className="group hover:shadow-lg transition-all duration-200">
             <CardContent className="pt-6">
-              {/* Vista móvil para cuotas futuras */}
-              <div className="block sm:hidden space-y-3">
-                {cuotasFuturas.map((cuota) => (
-                  <Card key={`${cuota.gastoId}-${cuota.cuotaIndex}`} className="p-4">
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="font-medium text-sm">{cuota.descripcion}</h4>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {tarjetas.find(t => t.id === cuota.tarjetaId)?.nombre}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-lg font-bold text-primary">
-                        {formatCurrency(cuota.monto)}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Vencimiento: {formatDate(cuota.fecha.toISOString())}
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => abrirConfirmacionPago(cuota.gastoId, cuota.descripcion, cuota.monto)}
-                        className="w-full"
-                      >
-                        Marcar como Pagada
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
-                {cuotasFuturas.length === 0 && (
-                  <div className="text-center text-muted-foreground py-12">
-                    <p className="text-sm sm:text-base">No hay cuotas futuras pendientes</p>
-                    <p className="text-xs sm:text-sm mt-2">Todas las cuotas están al día o no hay gastos en cuotas registrados</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Vista desktop para cuotas futuras */}
-              <div className="hidden sm:block">
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Descripción</TableHead>
-                        <TableHead>Tarjeta</TableHead>
-                        <TableHead>Monto por Cuota</TableHead>
-                        <TableHead>Fecha de Vencimiento</TableHead>
-                        <TableHead>Acciones</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {cuotasFuturas.map((cuota) => (
-                        <TableRow key={`${cuota.gastoId}-${cuota.cuotaIndex}`}>
-                          <TableCell>{cuota.descripcion}</TableCell>
-                          <TableCell>
-                            {tarjetas.find(t => t.id === cuota.tarjetaId)?.nombre}
-                          </TableCell>
-                          <TableCell>{formatCurrency(cuota.monto)}</TableCell>
-                          <TableCell>{formatDate(cuota.fecha.toISOString())}</TableCell>
-                          <TableCell>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => abrirConfirmacionPago(cuota.gastoId, cuota.descripcion, cuota.monto)}
-                            >
-                              Marcar como Pagada
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                      {cuotasFuturas.length === 0 && (
-                        <TableRow>
-                          <TableCell colSpan={5} className="text-center text-muted-foreground py-12">
-                            <div>
-                              <p className="text-sm sm:text-base">No hay cuotas futuras pendientes</p>
-                              <p className="text-xs sm:text-sm mt-2">Todas las cuotas están al día o no hay gastos en cuotas registrados</p>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
+              {cuotasFuturas.length === 0 ? (
+                <div className="text-center text-muted-foreground py-12">
+                  <CreditCard className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+                  <p className="text-sm sm:text-base">No hay cuotas futuras pendientes</p>
+                  <p className="text-xs sm:text-sm mt-2">Todas las cuotas están al día o no hay gastos en cuotas registrados</p>
                 </div>
-              </div>
+              ) : (
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                  {cuotasFuturas.map((cuota) => (
+                    <Card key={`${cuota.gastoId}-${cuota.cuotaIndex}`} className="group hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500 hover:border-l-blue-600">
+                      <CardHeader className="pb-3 sm:pb-4">
+                        <CardTitle className="flex justify-between items-start sm:items-center gap-2">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <div className="p-1.5 rounded-full bg-blue-100 dark:bg-blue-900/20">
+                              <TrendingUp className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-semibold text-sm sm:text-base truncate">{cuota.descripcion}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {tarjetas.find(t => t.id === cuota.tarjetaId)?.nombre}
+                              </p>
+                            </div>
+                          </div>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="space-y-3 sm:space-y-4">
+                          {/* Monto de la cuota */}
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <DollarSign className="h-3 w-3" />
+                              Monto por Cuota
+                            </p>
+                            <p className="text-lg sm:text-xl font-bold text-blue-600">
+                              {formatCurrency(cuota.monto)}
+                            </p>
+                          </div>
+
+                          {/* Fecha de vencimiento */}
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              Vencimiento
+                            </p>
+                            <p className="font-medium text-sm">
+                              {formatDate(cuota.fecha.toISOString())}
+                            </p>
+                          </div>
+
+                          {/* Botón de acción */}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => abrirConfirmacionPago(cuota.gastoId, cuota.descripcion, cuota.monto)}
+                            className="w-full"
+                          >
+                            Marcar como Pagada
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

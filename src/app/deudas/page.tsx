@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -12,6 +11,7 @@ import { Toast, useToast } from "@/components/ui/toast"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { formatCurrency, formatDate, cleanDuplicateData } from "@/lib/utils"
 import { validarCamposObligatorios, validarMonto, validarFecha } from "@/lib/validations"
+import { TrendingDown, DollarSign, Calendar, User, Plus, Trash, Pencil, CheckCircle, Clock, AlertTriangle, Handshake } from "lucide-react"
 import type { Deuda, PagoDeuda } from "@/app/types/types"
 
 export default function DeudasPage() {
@@ -242,45 +242,78 @@ export default function DeudasPage() {
   const deudasPendientes = deudas.filter(d => d.estado !== 'pagada')
   const deudasPagadas = deudas.filter(d => d.estado === 'pagada')
 
+  // Función para obtener el color del tipo de deuda
+  const getTipoDeudaColor = (tipo: string) => {
+    switch (tipo) {
+      case 'porPagar':
+        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+      case 'porCobrar':
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
+    }
+  }
+
+  // Función para obtener el color del estado
+  const getEstadoColor = (estado: string) => {
+    switch (estado) {
+      case 'pagada':
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+      case 'parcial':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+      case 'pendiente':
+        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
+    }
+  }
+
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Deudas</h2>
+    <div className="space-y-3 sm:space-y-6 px-2 sm:px-0">
+      {/* Header mejorado para móvil */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <h2 className="text-xl sm:text-3xl font-bold tracking-tight">Deudas</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto shadow-sm hover:shadow-md transition-shadow">
+              <Plus className="h-4 w-4 mr-2" />
               Agregar Deuda
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-[425px] max-w-[95vw] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{isEditMode ? "Editar Deuda" : "Nueva Deuda"}</DialogTitle>
+              <DialogTitle className="text-lg sm:text-xl flex items-center gap-2">
+                <Handshake className="h-5 w-5" />
+                {isEditMode ? "Editar Deuda" : "Nueva Deuda"}
+              </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <label>Descripción</label>
+                <label className="text-sm sm:text-base font-medium">Descripción</label>
                 <Input
                   value={nuevaDeuda.descripcion}
                   onChange={(e) => setNuevaDeuda({...nuevaDeuda, descripcion: e.target.value})}
                   placeholder="Ej: Préstamo personal"
+                  className="focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="space-y-2">
-                <label>Monto</label>
+                <label className="text-sm sm:text-base font-medium">Monto</label>
                 <Input
                   type="number"
                   value={nuevaDeuda.monto}
                   onChange={(e) => setNuevaDeuda({...nuevaDeuda, monto: e.target.value})}
                   placeholder="0.00"
+                  className="focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="space-y-2">
-                <label>Tipo</label>
+                <label className="text-sm sm:text-base font-medium">Tipo</label>
                 <Select
                   value={nuevaDeuda.tipo}
                   onValueChange={(value) => setNuevaDeuda({...nuevaDeuda, tipo: value})}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="focus:ring-2 focus:ring-blue-500">
                     <SelectValue placeholder="Selecciona el tipo" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[200px] scrollbar-hidden">
@@ -290,43 +323,47 @@ export default function DeudasPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label>Persona</label>
+                <label className="text-sm sm:text-base font-medium">Persona</label>
                 <Input
                   value={nuevaDeuda.persona}
                   onChange={(e) => setNuevaDeuda({...nuevaDeuda, persona: e.target.value})}
                   placeholder="Ej: Juan Pérez"
+                  className="focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="space-y-2">
-                <label>Fecha</label>
+                <label className="text-sm sm:text-base font-medium">Fecha</label>
                 <Input
                   type="date"
                   value={nuevaDeuda.fecha}
                   onChange={(e) => setNuevaDeuda({...nuevaDeuda, fecha: e.target.value})}
+                  className="focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="space-y-2">
-                <label>Fecha de Vencimiento (opcional)</label>
+                <label className="text-sm sm:text-base font-medium">Fecha de Vencimiento (opcional)</label>
                 <Input
                   type="date"
                   value={nuevaDeuda.fechaVencimiento}
                   onChange={(e) => setNuevaDeuda({...nuevaDeuda, fechaVencimiento: e.target.value})}
+                  className="focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="space-y-2">
-                <label>Notas (opcional)</label>
+                <label className="text-sm sm:text-base font-medium">Notas (opcional)</label>
                 <Input
                   value={nuevaDeuda.notas}
                   onChange={(e) => setNuevaDeuda({...nuevaDeuda, notas: e.target.value})}
                   placeholder="Notas adicionales"
+                  className="focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+            <DialogFooter className="flex flex-col sm:flex-row gap-2">
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:w-auto">
                 Cancelar
               </Button>
-              <Button onClick={guardarDeuda}>
+              <Button onClick={guardarDeuda} className="w-full sm:w-auto">
                 Guardar
               </Button>
             </DialogFooter>
@@ -335,170 +372,266 @@ export default function DeudasPage() {
       </div>
 
       <Tabs defaultValue="pendientes" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="pendientes">Pendientes</TabsTrigger>
-          <TabsTrigger value="pagadas">Pagadas</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 shadow-sm">
+          <TabsTrigger value="pendientes" className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4" />
+            Pendientes
+          </TabsTrigger>
+          <TabsTrigger value="pagadas" className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4" />
+            Pagadas
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="pendientes" className="min-h-[300px]">
-          <Card>
-            <CardHeader>
-              <CardTitle>Deudas Pendientes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {deudasPendientes.length === 0 ? (
-                <div className="text-center text-muted-foreground py-12">
-                  <p className="text-sm sm:text-base">No hay deudas pendientes</p>
-                  <p className="text-xs sm:text-sm mt-2">¡Excelente! Todas tus deudas están pagadas o no tienes deudas registradas</p>
-                </div>
-              ) : (
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Descripción</TableHead>
-                        <TableHead>Persona</TableHead>
-                        <TableHead>Monto Total</TableHead>
-                        <TableHead>Pagado</TableHead>
-                        <TableHead>Pendiente</TableHead>
-                        <TableHead>Fecha</TableHead>
-                        <TableHead>Vencimiento</TableHead>
-                        <TableHead>Acciones</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {deudasPendientes.map((deuda) => (
-                      <TableRow key={deuda.id}>
-                        <TableCell>{deuda.descripcion}</TableCell>
-                        <TableCell>{deuda.persona}</TableCell>
-                        <TableCell>{formatCurrency(deuda.monto)}</TableCell>
-                        <TableCell>{formatCurrency(deuda.montoPagado)}</TableCell>
-                        <TableCell>{formatCurrency(deuda.monto - deuda.montoPagado)}</TableCell>
-                        <TableCell>{formatDate(deuda.fecha)}</TableCell>
-                        <TableCell>{deuda.fechaVencimiento ? formatDate(deuda.fechaVencimiento) : '-'}</TableCell>
-                        <TableCell>
-                          <div className="flex space-x-2">
-                            <Button
-                              size="sm"
-                              onClick={() => {
-                                setDeudaSeleccionada(deuda)
-                                setIsPagoDialogOpen(true)
-                              }}
-                            >
-                              Registrar Pago
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => abrirDialogoEditar(deuda)}
-                            >
-                              Editar
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => abrirConfirmacionEliminar(deuda)}
-                            >
-                              Eliminar
-                            </Button>
+          {deudasPendientes.length === 0 ? (
+            <Card className="group hover:shadow-lg transition-all duration-200">
+              <CardContent className="pt-6 text-center">
+                <Handshake className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+                <p className="text-muted-foreground text-sm sm:text-base">No hay deudas pendientes</p>
+                <p className="text-xs sm:text-sm mt-2 text-muted-foreground">¡Excelente! Todas tus deudas están pagadas o no tienes deudas registradas</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {deudasPendientes.map((deuda) => (
+                <Card key={deuda.id} className="group hover:shadow-lg transition-all duration-200 border-l-4 border-l-red-500 hover:border-l-red-600">
+                  <CardHeader className="pb-3 sm:pb-4">
+                    <CardTitle className="flex justify-between items-start sm:items-center gap-2">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="p-1.5 rounded-full bg-red-100 dark:bg-red-900/20">
+                          <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-semibold text-sm sm:text-base truncate">{deuda.descripcion}</p>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                            <User className="h-3 w-3" />
+                            {deuda.persona}
+                          </p>
+                        </div>
+                      </div>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="space-y-3 sm:space-y-4">
+                      {/* Monto total */}
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <DollarSign className="h-3 w-3" />
+                          Monto Total
+                        </p>
+                        <p className="text-xl sm:text-2xl font-bold text-red-600">
+                          {formatCurrency(deuda.monto)}
+                        </p>
+                      </div>
+
+                      {/* Información de pagos */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground">Pagado</p>
+                          <p className="font-medium text-sm text-green-600">{formatCurrency(deuda.montoPagado)}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground">Pendiente</p>
+                          <p className="font-medium text-sm text-orange-600">{formatCurrency(deuda.monto - deuda.montoPagado)}</p>
+                        </div>
+                      </div>
+
+                      {/* Información adicional */}
+                      <div className="pt-2 border-t border-border/50">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              Fecha
+                            </p>
+                            <p className="font-medium text-sm">{formatDate(deuda.fecha)}</p>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                          {deuda.fechaVencimiento && (
+                            <div className="flex items-center justify-between">
+                              <p className="text-xs text-muted-foreground">Vencimiento</p>
+                              <p className="font-medium text-sm">{formatDate(deuda.fechaVencimiento)}</p>
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-muted-foreground">Tipo</p>
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTipoDeudaColor(deuda.tipo)}`}>
+                              {deuda.tipo === 'porPagar' ? 'Por Pagar' : 'Por Cobrar'}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-muted-foreground">Estado</p>
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getEstadoColor(deuda.estado)}`}>
+                              {deuda.estado === 'pendiente' ? 'Pendiente' : 'Parcial'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Botones de acción */}
+                      <div className="flex gap-2 pt-2">
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setDeudaSeleccionada(deuda)
+                            setIsPagoDialogOpen(true)
+                          }}
+                          className="flex-1"
+                        >
+                          Registrar Pago
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => abrirDialogoEditar(deuda)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => abrirConfirmacionEliminar(deuda)}
+                        >
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
         <TabsContent value="pagadas" className="min-h-[300px]">
-          <Card>
-            <CardHeader>
-              <CardTitle>Deudas Pagadas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {deudasPagadas.length === 0 ? (
-                <div className="text-center text-muted-foreground py-12">
-                  <p className="text-sm sm:text-base">No hay deudas pagadas aún</p>
-                  <p className="text-xs sm:text-sm mt-2">Aquí aparecerán las deudas que hayas marcado como pagadas</p>
-                </div>
-              ) : (
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Descripción</TableHead>
-                        <TableHead>Persona</TableHead>
-                        <TableHead>Monto Total</TableHead>
-                        <TableHead>Fecha</TableHead>
-                        <TableHead>Historial de Pagos</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {deudasPagadas.map((deuda) => (
-                      <TableRow key={deuda.id}>
-                        <TableCell>{deuda.descripcion}</TableCell>
-                        <TableCell>{deuda.persona}</TableCell>
-                        <TableCell>{formatCurrency(deuda.monto)}</TableCell>
-                        <TableCell>{formatDate(deuda.fecha)}</TableCell>
-                        <TableCell>
+          {deudasPagadas.length === 0 ? (
+            <Card className="group hover:shadow-lg transition-all duration-200">
+              <CardContent className="pt-6 text-center">
+                <CheckCircle className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+                <p className="text-muted-foreground text-sm sm:text-base">No hay deudas pagadas aún</p>
+                <p className="text-xs sm:text-sm mt-2 text-muted-foreground">Aquí aparecerán las deudas que hayas marcado como pagadas</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {deudasPagadas.map((deuda) => (
+                <Card key={deuda.id} className="group hover:shadow-lg transition-all duration-200 border-l-4 border-l-green-500 hover:border-l-green-600">
+                  <CardHeader className="pb-3 sm:pb-4">
+                    <CardTitle className="flex justify-between items-start sm:items-center gap-2">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="p-1.5 rounded-full bg-green-100 dark:bg-green-900/20">
+                          <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-semibold text-sm sm:text-base truncate">{deuda.descripcion}</p>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                            <User className="h-3 w-3" />
+                            {deuda.persona}
+                          </p>
+                        </div>
+                      </div>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="space-y-3 sm:space-y-4">
+                      {/* Monto total */}
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <DollarSign className="h-3 w-3" />
+                          Monto Total
+                        </p>
+                        <p className="text-xl sm:text-2xl font-bold text-green-600">
+                          {formatCurrency(deuda.monto)}
+                        </p>
+                      </div>
+
+                      {/* Información adicional */}
+                      <div className="pt-2 border-t border-border/50">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              Fecha
+                            </p>
+                            <p className="font-medium text-sm">{formatDate(deuda.fecha)}</p>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-muted-foreground">Tipo</p>
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTipoDeudaColor(deuda.tipo)}`}>
+                              {deuda.tipo === 'porPagar' ? 'Por Pagar' : 'Por Cobrar'}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-muted-foreground">Estado</p>
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getEstadoColor(deuda.estado)}`}>
+                              Pagada
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Historial de pagos */}
+                      {deuda.historialPagos.length > 0 && (
+                        <div className="pt-2 border-t border-border/50">
+                          <p className="text-xs text-muted-foreground mb-2">Historial de Pagos</p>
                           <div className="space-y-1">
                             {deuda.historialPagos.map((pago) => (
-                              <div key={pago.id} className="text-sm">
-                                {formatCurrency(pago.monto)} - {formatDate(pago.fecha)}
+                              <div key={pago.id} className="flex items-center justify-between text-xs">
+                                <span className="text-muted-foreground">{formatDate(pago.fecha)}</span>
+                                <span className="font-medium text-green-600">{formatCurrency(pago.monto)}</span>
                               </div>
                             ))}
                           </div>
-                        </TableCell>
-                      </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 
       <Dialog open={isPagoDialogOpen} onOpenChange={setIsPagoDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px] max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle>Registrar Pago</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              Registrar Pago
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             {deudaSeleccionada && (
               <>
                 <div className="space-y-2">
-                  <label>Deuda</label>
+                  <label className="text-sm font-medium">Deuda</label>
                   <p className="font-medium">{deudaSeleccionada.descripcion}</p>
                 </div>
                 <div className="space-y-2">
-                  <label>Monto Total</label>
+                  <label className="text-sm font-medium">Monto Total</label>
                   <p className="font-medium">{formatCurrency(deudaSeleccionada.monto)}</p>
                 </div>
                 <div className="space-y-2">
-                  <label>Monto Pagado</label>
+                  <label className="text-sm font-medium">Monto Pagado</label>
                   <p className="font-medium">{formatCurrency(deudaSeleccionada.montoPagado)}</p>
                 </div>
                 <div className="space-y-2">
-                  <label>Monto Pendiente</label>
+                  <label className="text-sm font-medium">Monto Pendiente</label>
                   <p className="font-medium">{formatCurrency(deudaSeleccionada.monto - deudaSeleccionada.montoPagado)}</p>
                 </div>
               </>
             )}
           </div>
-          <DialogFooter className="flex space-x-2">
-            <Button variant="outline" onClick={() => setIsPagoDialogOpen(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setIsPagoDialogOpen(false)} className="w-full sm:w-auto">
               Cancelar
             </Button>
             <Button variant="outline" onClick={() => {
               setIsPagoDialogOpen(false)
               setIsPagoParcialDialogOpen(true)
-            }}>
+            }} className="w-full sm:w-auto">
               Pago Parcial
             </Button>
-            <Button onClick={registrarPagoTotal}>
+            <Button onClick={registrarPagoTotal} className="w-full sm:w-auto">
               Pago Total
             </Button>
           </DialogFooter>
@@ -506,46 +639,50 @@ export default function DeudasPage() {
       </Dialog>
 
       <Dialog open={isPagoParcialDialogOpen} onOpenChange={setIsPagoParcialDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px] max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle>Registrar Pago Parcial</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              Registrar Pago Parcial
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             {deudaSeleccionada && (
               <>
                 <div className="space-y-2">
-                  <label>Deuda</label>
+                  <label className="text-sm font-medium">Deuda</label>
                   <p className="font-medium">{deudaSeleccionada.descripcion}</p>
                 </div>
                 <div className="space-y-2">
-                  <label>Monto Total</label>
+                  <label className="text-sm font-medium">Monto Total</label>
                   <p className="font-medium">{formatCurrency(deudaSeleccionada.monto)}</p>
                 </div>
                 <div className="space-y-2">
-                  <label>Monto Pagado</label>
+                  <label className="text-sm font-medium">Monto Pagado</label>
                   <p className="font-medium">{formatCurrency(deudaSeleccionada.montoPagado)}</p>
                 </div>
                 <div className="space-y-2">
-                  <label>Monto Pendiente</label>
+                  <label className="text-sm font-medium">Monto Pendiente</label>
                   <p className="font-medium">{formatCurrency(deudaSeleccionada.monto - deudaSeleccionada.montoPagado)}</p>
                 </div>
                 <div className="space-y-2">
-                  <label>Monto del Pago</label>
+                  <label className="text-sm font-medium">Monto del Pago</label>
                   <Input
                     type="number"
                     value={montoPago}
                     onChange={(e) => setMontoPago(e.target.value)}
                     placeholder="0.00"
+                    className="focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </>
             )}
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsPagoParcialDialogOpen(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setIsPagoParcialDialogOpen(false)} className="w-full sm:w-auto">
               Cancelar
             </Button>
-            <Button onClick={registrarPagoParcial}>
+            <Button onClick={registrarPagoParcial} className="w-full sm:w-auto">
               Registrar Pago
             </Button>
           </DialogFooter>

@@ -9,13 +9,19 @@ import { validarSaldoTarjeta, validarCamposObligatorios, validarMonto, validarFe
 import type { Gasto, MedioPago } from "@/app/types/types"
 import { useTarjetas } from "@/app/context/TarjetasContext"
 import { useCategorias } from "@/app/context/CategoriasContext"
+import { useGastos } from "@/app/context/GastosContext"
 import { useGastoModal } from "@/app/context/GastoModalContext"
+import { useEffect } from "react"
 
 export function GastoModal() {
   const { isModalOpen, closeModal } = useGastoModal()
   const { tarjetas, actualizarSaldosTarjetas } = useTarjetas()
   const { categorias } = useCategorias()
+  const { gastos, agregarGasto, actualizarGasto, gastoEnEdicion, setGastoEnEdicion } = useGastos()
   const { toast, showToast, hideToast } = useToast()
+
+  // Determinar si estamos en modo edición
+  const isEditing = Boolean(gastoEnEdicion)
   
   const [nuevoGasto, setNuevoGasto] = useState<{
     descripcion: string;
@@ -45,12 +51,30 @@ export function GastoModal() {
       tarjetaId: "",
       cuotas: ""
     })
+    setGastoEnEdicion(null)
   }
+
+  // Cargar datos del gasto en edición cuando cambie
+  useEffect(() => {
+    if (gastoEnEdicion && gastoEnEdicion.id) {
+      setNuevoGasto({
+        descripcion: gastoEnEdicion.descripcion,
+        monto: gastoEnEdicion.monto.toString(),
+        categoriaId: gastoEnEdicion.categoriaId.toString(),
+        fecha: gastoEnEdicion.fecha,
+        medioPago: gastoEnEdicion.medioPago,
+        tarjetaId: gastoEnEdicion.tarjetaId?.toString() || "",
+        cuotas: gastoEnEdicion.cuotas?.toString() || ""
+      })
+    }
+  }, [gastoEnEdicion?.id])
 
   const handleClose = () => {
     resetForm()
     closeModal()
   }
+
+
 
   const guardarGasto = () => {
     // Validar campos obligatorios
@@ -112,31 +136,56 @@ export function GastoModal() {
       return
     }
 
-    // Obtener gastos existentes
-    const gastosExistentes = JSON.parse(localStorage.getItem('gastos') || '[]')
-    
-    const gasto: Gasto = {
-      id: Math.max(...gastosExistentes.map((g: Gasto) => g.id), 0) + 1,
-      descripcion: nuevoGasto.descripcion,
-      monto: monto,
-      categoriaId: categoriaId,
-      fecha: nuevoGasto.fecha,
-      medioPago: nuevoGasto.medioPago,
-      tarjetaId: tarjetaId,
-      cuotas: cuotas
-    }
+    if (gastoEnEdicion) {
+      // Modo edición
+      const gastoActualizado: Gasto = {
+        ...gastoEnEdicion,
+        descripcion: nuevoGasto.descripcion,
+        monto: monto,
+        categoriaId: categoriaId,
+        fecha: nuevoGasto.fecha,
+        medioPago: nuevoGasto.medioPago,
+        tarjetaId: tarjetaId,
+        cuotas: cuotas
+      }
 
-    const nuevosGastos = [...gastosExistentes, gasto]
-    localStorage.setItem('gastos', JSON.stringify(nuevosGastos))
-    
-    // Actualizar saldos de tarjetas
-    actualizarSaldosTarjetas(nuevosGastos)
-    
-    resetForm()
-    closeModal()
-    
-    // Mostrar mensaje de éxito
-    showToast("Gasto agregado con éxito ✅", "success")
+      // Actualizar gasto usando el contexto
+      actualizarGasto(gastoActualizado)
+      
+      // Actualizar saldos de tarjetas
+      const gastosActualizados = gastos.map(g => g.id === gastoEnEdicion.id ? gastoActualizado : g)
+      actualizarSaldosTarjetas(gastosActualizados)
+      
+      resetForm()
+      closeModal()
+      
+      // Mostrar mensaje de éxito
+      showToast("Gasto actualizado con éxito ✅", "success")
+    } else {
+      // Modo creación
+      const gasto: Gasto = {
+        id: Math.max(...gastos.map((g: Gasto) => g.id), 0) + 1,
+        descripcion: nuevoGasto.descripcion,
+        monto: monto,
+        categoriaId: categoriaId,
+        fecha: nuevoGasto.fecha,
+        medioPago: nuevoGasto.medioPago,
+        tarjetaId: tarjetaId,
+        cuotas: cuotas
+      }
+
+      // Agregar gasto usando el contexto
+      agregarGasto(gasto)
+      
+      // Actualizar saldos de tarjetas
+      actualizarSaldosTarjetas([...gastos, gasto])
+      
+      resetForm()
+      closeModal()
+      
+      // Mostrar mensaje de éxito
+      showToast("Gasto agregado con éxito ✅", "success")
+    }
   }
 
   return (
@@ -144,7 +193,9 @@ export function GastoModal() {
       <Dialog open={isModalOpen} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-[425px] max-w-[95vw] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-lg sm:text-xl">Agregar Gasto</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">
+              {gastoEnEdicion ? "Editar Gasto" : "Agregar Gasto"}
+            </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
