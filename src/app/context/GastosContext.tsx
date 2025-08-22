@@ -23,7 +23,22 @@ export function GastosProvider({ children }: { children: ReactNode }) {
 
   // Cargar gastos desde localStorage al iniciar
   useEffect(() => {
-    cargarGastos()
+    const savedGastos = JSON.parse(localStorage.getItem('gastos') || '[]')
+    
+    // Validar gastos
+    const validGastos = savedGastos.filter((gasto: unknown) => 
+      gasto && typeof gasto === 'object' && 
+      gasto !== null &&
+      'id' in gasto && typeof (gasto as Record<string, unknown>).id === 'number' &&
+      'descripcion' in gasto && typeof (gasto as Record<string, unknown>).descripcion === 'string' &&
+      'monto' in gasto && typeof (gasto as Record<string, unknown>).monto === 'number' &&
+      'categoriaId' in gasto && typeof (gasto as Record<string, unknown>).categoriaId === 'number' &&
+      'medioPago' in gasto && typeof (gasto as Record<string, unknown>).medioPago === 'string' &&
+      'fecha' in gasto && typeof (gasto as Record<string, unknown>).fecha === 'string'
+    ) as Gasto[]
+    
+    const cleanedGastos = cleanDuplicateData(validGastos)
+    setGastos(cleanedGastos)
   }, [])
 
   // Guardar gastos en localStorage cuando cambien

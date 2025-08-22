@@ -11,7 +11,7 @@ import { Toast, useToast } from "@/components/ui/toast"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { formatCurrency, formatDate, cleanDuplicateData } from "@/lib/utils"
 import { validarCamposObligatorios, validarMonto, validarFecha } from "@/lib/validations"
-import { TrendingDown, DollarSign, Calendar, User, Plus, Trash, Pencil, CheckCircle, Clock, AlertTriangle, Handshake } from "lucide-react"
+import { TrendingDown, DollarSign, Calendar, User, Plus, Trash, Pencil, CheckCircle, AlertTriangle, Handshake } from "lucide-react"
 import type { Deuda, PagoDeuda } from "@/app/types/types"
 
 export default function DeudasPage() {

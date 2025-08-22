@@ -14,7 +14,7 @@ import { useTarjetas } from "@/app/context/TarjetasContext"
 import { useCategorias } from "@/app/context/CategoriasContext"
 import { useGastos } from "@/app/context/GastosContext"
 import { useGastoModal } from "@/app/context/GastoModalContext"
-import { cleanDuplicateData } from "@/lib/utils"
+
 
 export default function GastosPage() {
   const { tarjetas, actualizarSaldosTarjetas } = useTarjetas()

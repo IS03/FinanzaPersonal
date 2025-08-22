@@ -20,8 +20,7 @@ export function GastoModal() {
   const { gastos, agregarGasto, actualizarGasto, gastoEnEdicion, setGastoEnEdicion } = useGastos()
   const { toast, showToast, hideToast } = useToast()
 
-  // Determinar si estamos en modo edición
-  const isEditing = Boolean(gastoEnEdicion)
+
   
   const [nuevoGasto, setNuevoGasto] = useState<{
     descripcion: string;
@@ -67,7 +66,7 @@ export function GastoModal() {
         cuotas: gastoEnEdicion.cuotas?.toString() || ""
       })
     }
-  }, [gastoEnEdicion?.id])
+  }, [gastoEnEdicion])
 
   const handleClose = () => {
     resetForm()

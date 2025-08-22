@@ -75,7 +75,7 @@ export function MainNav() {
     if (isMobileMenuOpen) {
       closeMenu()
     }
-  }, [pathname])
+  }, [pathname, isMobileMenuOpen, closeMenu])
 
   // Prevenir scroll del body cuando el menú está abierto
   useEffect(() => {
@@ -165,7 +165,7 @@ export function MainNav() {
               {/* Navigation Links */}
               <nav className="flex-1 p-4 overflow-y-auto">
                 <div className="space-y-2">
-                  {links.map((link, index) => {
+                  {links.map((link) => {
                     const isActive = pathname === link.href
                     return (
                       <Link

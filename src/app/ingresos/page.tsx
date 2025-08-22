@@ -9,7 +9,7 @@ import { Toast, useToast } from "@/components/ui/toast"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { formatCurrency, formatDate, cleanDuplicateData } from "@/lib/utils"
 import { validarCamposObligatorios, validarMonto } from "@/lib/validations"
-import { TrendingUp, DollarSign, Calendar, User, Wallet, Plus, Trash, Filter } from "lucide-react"
+import { TrendingUp, DollarSign, Calendar, User, Wallet, Plus, Trash } from "lucide-react"
 import type { Ingreso } from "@/app/types/types"
 
 const fuentes = [

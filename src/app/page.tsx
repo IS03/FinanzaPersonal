@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { formatCurrency, calculateMonthlyStats, cleanDuplicateData } from "@/lib/utils"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TrendingDown, TrendingUp, CreditCard, DollarSign, Calendar, BarChart3, Receipt, Wallet } from "lucide-react"
-import type { Gasto, Tarjeta, Ingreso } from "@/app/types/types"
+import type { Ingreso } from "@/app/types/types"
 import { useGastos } from "@/app/context/GastosContext"
 import { useTarjetas } from "@/app/context/TarjetasContext"
 

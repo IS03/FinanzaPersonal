@@ -9,7 +9,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { formatCurrency, formatDate, cleanDuplicateData } from "@/lib/utils"
 import type { Gasto, Tarjeta } from "@/app/types/types"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CreditCard, Calendar, DollarSign, CheckCircle, Clock, TrendingUp, Filter } from "lucide-react"
+import { CreditCard, Calendar, DollarSign, CheckCircle, Clock, TrendingUp } from "lucide-react"
 
 export default function CuotasPage() {
   const { toast, showToast, hideToast } = useToast()
