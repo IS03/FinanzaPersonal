@@ -38,7 +38,7 @@ export default function TwitterImage() {
         >
           <div style={{ fontSize: 200, marginBottom: 20 }}>💰</div>
           <div style={{ fontSize: 64, fontWeight: 'bold', marginBottom: 20 }}>
-            Finly
+            Findly
           </div>
           <div style={{ fontSize: 32, opacity: 0.8 }}>
             Gestiona tus finanzas de manera inteligente

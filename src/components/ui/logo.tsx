@@ -14,7 +14,7 @@ export function Logo({ className = "" }: LogoProps) {
     <div className={`flex items-center ${className}`}>
       <Image
         src={theme === 'light' ? '/img/icono-modoclaro.png' : '/img/icono-modooscuro.png'}
-        alt="Finly Logo"
+        alt="Findly Logo"
         width={96}
         height={96}
         className="transition-all duration-300 w-20 h-20 sm:w-24 sm:h-24"

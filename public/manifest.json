@@ -1,6 +1,6 @@
 {
-  "name": "Finly",
-  "short_name": "Finly",
+  "name": "Findly",
+  "short_name": "Findly",
   "description": "Aplicación para gestionar tus finanzas personales",
   "start_url": "/",
   "display": "standalone",

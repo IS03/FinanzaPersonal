@@ -1,8 +1,8 @@
 export const APP_CONFIG = {
-  name: "Finly",
+  name: "Findly",
   description: "Sistema de control de finanzas personales",
   version: "1.0.0",
-  author: "Finly Team",
+  author: "Findly Team",
   features: {
     expenses: true,
     income: true,
@@ -16,7 +16,7 @@ export const APP_CONFIG = {
   defaultCurrency: "ARS",
   dateFormat: "es-AR",
   storage: {
-    prefix: "finly_",
+    prefix: "findly_",
     keys: {
       gastos: "gastos",
       ingresos: "ingresos",

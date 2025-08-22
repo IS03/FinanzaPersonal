@@ -1,8 +1,8 @@
-# Validaciones y Feedback - Finly
+# Validaciones y Feedback - Findly
 
 ## 🎯 Descripción
 
-Se han implementado validaciones robustas y un sistema de feedback visual para mejorar la experiencia del usuario en la aplicación Finly. Esto incluye mensajes claros de éxito y error, así como validaciones preventivas para evitar datos inconsistentes.
+Se han implementado validaciones robustas y un sistema de feedback visual para mejorar la experiencia del usuario en la aplicación Findly. Esto incluye mensajes claros de éxito y error, así como validaciones preventivas para evitar datos inconsistentes.
 
 ## ✨ Nuevas Funcionalidades
 
@@ -296,4 +296,4 @@ export function validarCuotas(cuotas: string, medioPago: string): {
 
 ---
 
-**Desarrollado con ❤️ para mejorar la experiencia del usuario en Finly**
+**Desarrollado con ❤️ para mejorar la experiencia del usuario en Findly**

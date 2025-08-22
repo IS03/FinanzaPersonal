@@ -241,7 +241,7 @@ El dashboard es tu ventana principal a las finanzas:
 ### 📁 Estructura de Carpetas
 
 ```
-finly/
+findly/
 ├── 📁 src/
 │   ├── 📁 app/                    # App Router de Next.js
 │   │   ├── 📁 context/            # Estado global
@@ -557,7 +557,7 @@ Este proyecto está bajo la **Licencia MIT**. Ver el archivo [`LICENSE`](LICENSE
 ```
 MIT License
 
-Copyright (c) 2024 Finly
+Copyright (c) 2024 Findly
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -576,10 +576,10 @@ copies or substantial portions of the Software.
 
 ### 🆘 ¿Necesitas Ayuda?
 
-- **🐛 Issues**: [Abre un issue](https://github.com/tu-usuario/finly/issues) en GitHub
+- **🐛 Issues**: [Abre un issue](https://github.com/tu-usuario/findly/issues) en GitHub
 - **📚 Documentación**: Revisa este README completo
 - **💻 Código**: Explora el código fuente en GitHub
-- **💬 Discusiones**: Únete a las [discusiones](https://github.com/tu-usuario/finly/discussions)
+- **💬 Discusiones**: Únete a las [discusiones](https://github.com/tu-usuario/findly/discussions)
 
 ### 📧 Contacto
 
@@ -615,9 +615,9 @@ copies or substantial portions of the Software.
 
 Si este proyecto te ayuda a controlar tus finanzas, ¡dale una estrella en GitHub!
 
-[![GitHub stars](https://img.shields.io/github/stars/tu-usuario/finly?style=social)](https://github.com/tu-usuario/finly)
-[![GitHub forks](https://img.shields.io/github/forks/tu-usuario/finly?style=social)](https://github.com/tu-usuario/finly)
-[![GitHub issues](https://img.shields.io/github/issues/tu-usuario/finly)](https://github.com/tu-usuario/finly/issues)
+[![GitHub stars](https://img.shields.io/github/stars/tu-usuario/findly?style=social)](https://github.com/tu-usuario/findly)
+[![GitHub forks](https://img.shields.io/github/forks/tu-usuario/findly?style=social)](https://github.com/tu-usuario/findly)
+[![GitHub issues](https://img.shields.io/github/issues/tu-usuario/findly)](https://github.com/tu-usuario/findly/issues)
 
 ---
 

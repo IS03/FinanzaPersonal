@@ -158,11 +158,11 @@ export default function DeudasPage() {
       return
     }
 
+    const nuevoMontoPagado = deudaSeleccionada.montoPagado + montoPagoNum
+    const estado: 'pendiente' | 'pagada' | 'parcial' = nuevoMontoPagado >= deudaSeleccionada.monto ? 'pagada' : 'parcial'
+    
     const deudasActualizadas = deudas.map(deuda => {
       if (deuda.id === deudaSeleccionada.id) {
-        const nuevoMontoPagado = deuda.montoPagado + montoPagoNum
-        const estado: 'pendiente' | 'pagada' | 'parcial' = nuevoMontoPagado >= deuda.monto ? 'pagada' : 'parcial'
-        
         const nuevoPago: PagoDeuda = {
           id: Math.max(...deuda.historialPagos.map(p => p.id), 0) + 1,
           monto: montoPagoNum,
@@ -188,7 +188,6 @@ export default function DeudasPage() {
     setIsPagoParcialDialogOpen(false)
     
     // Mostrar mensaje de éxito
-    const estado = nuevoMontoPagado >= deudaSeleccionada.monto ? 'pagada' : 'parcial'
     const mensaje = estado === 'pagada' 
       ? `Deuda "${deudaSeleccionada.descripcion}" pagada completamente ✅`
       : `Pago de ${formatCurrency(montoPagoNum)} registrado con éxito ✅`
