@@ -2,9 +2,10 @@ export interface Tarjeta {
   id: number
   nombre: string
   banco: string
+  tipo: 'credito' | 'debito'
   limite: number
-  diaCierre: number // Día del mes en que cierra el resumen
-  diaVencimiento: number // Día del mes en que vence el pago
+  diaCierre?: number // Día del mes en que cierra el resumen (solo para crédito)
+  diaVencimiento?: number // Día del mes en que vence el pago (solo para crédito)
   saldoUsado: number // Saldo actual usado de la tarjeta
   saldoDisponible: number // Saldo disponible de la tarjeta
 }

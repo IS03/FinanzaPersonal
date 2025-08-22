@@ -7,15 +7,21 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Toast, useToast } from "@/components/ui/toast"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { MoreHorizontal, Plus, Pencil, Trash } from "lucide-react"
+import { validarCamposObligatorios } from "@/lib/validations"
 import { useCategorias } from "@/app/context/CategoriasContext"
 import { EmojiPicker } from "@/components/ui/emoji-picker"
 
 export default function CategoriasPage() {
+  const { toast, showToast, hideToast } = useToast()
   const { categorias, agregarCategoria, actualizarCategoria, eliminarCategoria } = useCategorias()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [categoriaEditando, setCategoriaEditando] = useState<{ id: number; nombre: string; emoji: string } | null>(null)
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [categoriaAEliminar, setCategoriaAEliminar] = useState<{ id: number; nombre: string; emoji: string } | null>(null)
   const [nuevaCategoria, setNuevaCategoria] = useState({
     nombre: "",
     emoji: "📦"
@@ -45,15 +51,43 @@ export default function CategoriasPage() {
     setIsDialogOpen(true)
   }
 
-  const eliminarCategoriaHandler = (id: number) => {
-    if (confirm("¿Estás seguro de que deseas eliminar esta categoría?")) {
-      eliminarCategoria(id)
-    }
+  const abrirConfirmacionEliminar = (categoria: { id: number; nombre: string; emoji: string }) => {
+    setCategoriaAEliminar(categoria)
+    setIsConfirmDialogOpen(true)
+  }
+
+  const eliminarCategoriaHandler = () => {
+    if (!categoriaAEliminar) return
+
+    eliminarCategoria(categoriaAEliminar.id)
+    
+    // Mostrar mensaje de éxito
+    showToast("Categoría eliminada con éxito ✅", "success")
+    
+    // Limpiar estado
+    setCategoriaAEliminar(null)
   }
 
   const guardarCategoria = () => {
-    if (!nuevaCategoria.nombre) {
-      alert("Por favor, ingresa un nombre para la categoría")
+    // Validar campos obligatorios
+    const validacionCampos = validarCamposObligatorios({
+      nombre: nuevaCategoria.nombre
+    })
+
+    if (!validacionCampos.esValido) {
+      const camposFaltantes = validacionCampos.camposFaltantes.join(", ")
+      showToast(`Por favor, completa los campos: ${camposFaltantes}`, "error")
+      return
+    }
+
+    // Validar que el nombre no esté duplicado
+    const nombreExiste = categorias.some(cat => 
+      cat.nombre.toLowerCase() === nuevaCategoria.nombre.toLowerCase() && 
+      (!isEditMode || cat.id !== categoriaEditando?.id)
+    )
+
+    if (nombreExiste) {
+      showToast("Ya existe una categoría con ese nombre", "error")
       return
     }
 
@@ -75,6 +109,10 @@ export default function CategoriasPage() {
     
     resetForm()
     setIsDialogOpen(false)
+    
+    // Mostrar mensaje de éxito
+    const mensaje = isEditMode ? "Categoría actualizada con éxito ✅" : "Categoría agregada con éxito ✅"
+    showToast(mensaje, "success")
   }
 
   return (
@@ -117,7 +155,7 @@ export default function CategoriasPage() {
                           <Pencil className="h-4 w-4 mr-2" />
                           Editar
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => eliminarCategoriaHandler(categoria.id)}>
+                        <DropdownMenuItem onClick={() => abrirConfirmacionEliminar(categoria)}>
                           <Trash className="h-4 w-4 mr-2" />
                           Eliminar
                         </DropdownMenuItem>
@@ -172,6 +210,29 @@ export default function CategoriasPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Componente Toast para notificaciones */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={hideToast}
+      />
+
+      {/* Diálogo de confirmación para eliminar categoría */}
+      <ConfirmDialog
+        isOpen={isConfirmDialogOpen}
+        onClose={() => {
+          setIsConfirmDialogOpen(false)
+          setCategoriaAEliminar(null)
+        }}
+        onConfirm={eliminarCategoriaHandler}
+        title="Confirmar eliminación"
+        message={`¿Estás seguro de que deseas eliminar la categoría "${categoriaAEliminar?.emoji} ${categoriaAEliminar?.nombre}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="destructive"
+      />
     </div>
   )
 } 

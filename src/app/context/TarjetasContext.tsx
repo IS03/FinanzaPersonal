@@ -29,9 +29,8 @@ export function TarjetasProvider({ children }: { children: ReactNode }) {
       'id' in tarjeta && typeof (tarjeta as Record<string, unknown>).id === 'number' && 
       'nombre' in tarjeta && typeof (tarjeta as Record<string, unknown>).nombre === 'string' && 
       'banco' in tarjeta && typeof (tarjeta as Record<string, unknown>).banco === 'string' &&
+      'tipo' in tarjeta && typeof (tarjeta as Record<string, unknown>).tipo === 'string' &&
       'limite' in tarjeta && typeof (tarjeta as Record<string, unknown>).limite === 'number' &&
-      'diaCierre' in tarjeta && typeof (tarjeta as Record<string, unknown>).diaCierre === 'number' &&
-      'diaVencimiento' in tarjeta && typeof (tarjeta as Record<string, unknown>).diaVencimiento === 'number' &&
       'saldoUsado' in tarjeta && typeof (tarjeta as Record<string, unknown>).saldoUsado === 'number' &&
       'saldoDisponible' in tarjeta && typeof (tarjeta as Record<string, unknown>).saldoDisponible === 'number'
     ) as Tarjeta[]

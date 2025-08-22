@@ -121,6 +121,409 @@
   }
 }
 
+/* Animaciones para el menú móvil */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeInBackdrop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOutBackdrop {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseIcon {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(-10px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05) translateY(-5px);
+  }
+  70% {
+    transform: scale(0.95) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Clases de animación para el menú móvil */
+.mobile-menu-backdrop {
+  animation: fadeInBackdrop 0.3s ease-out forwards;
+}
+
+.mobile-menu-backdrop.closing {
+  animation: fadeOutBackdrop 0.3s ease-in forwards;
+}
+
+.mobile-menu-panel {
+  animation: slideInFromRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+}
+
+.mobile-menu-panel.closing {
+  animation: slideOutToRight 0.3s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+}
+
+.dark .mobile-menu-panel {
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Animación para los enlaces del menú */
+.menu-link {
+  animation: slideInFromTop 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+.menu-link:nth-child(1) { animation-delay: 0.1s; }
+.menu-link:nth-child(2) { animation-delay: 0.15s; }
+.menu-link:nth-child(3) { animation-delay: 0.2s; }
+.menu-link:nth-child(4) { animation-delay: 0.25s; }
+.menu-link:nth-child(5) { animation-delay: 0.3s; }
+.menu-link:nth-child(6) { animation-delay: 0.35s; }
+.menu-link:nth-child(7) { animation-delay: 0.4s; }
+
+/* Animación para el botón de menú */
+.menu-button {
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-button:hover {
+  background-color: hsl(var(--accent));
+  transform: scale(1.05);
+}
+
+.menu-button:active {
+  transform: scale(0.95);
+}
+
+.menu-button .menu-icon {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.menu-button:hover .menu-icon {
+  animation: pulseIcon 0.6s ease-in-out;
+}
+
+/* Animación para el header del menú */
+.menu-header {
+  animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  animation-delay: 0.2s;
+  opacity: 0;
+}
+
+/* Efecto de ondas al hacer clic */
+.menu-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.menu-button:active::before {
+  width: 40px;
+  height: 40px;
+}
+
+/* Mejorar la experiencia del backdrop */
+.backdrop-blur-sm {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Hover effects para los enlaces del menú */
+.menu-link-item {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease-in-out;
+}
+
+.menu-link-item:hover {
+  transform: translateX(4px);
+}
+
+.menu-link-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.menu-link-item:hover::before {
+  left: 100%;
+}
+
+/* Indicador activo animado */
+.active-indicator {
+  animation: bounceIn 0.3s ease-out forwards;
+  animation-delay: 0.1s;
+}
+
+/* Animaciones para el botón flotante */
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes floatBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes rotateIcon {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.floating-button {
+  animation: floatIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.floating-action-btn {
+  position: relative;
+  overflow: hidden;
+  animation: floatBounce 3s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.floating-action-btn:hover {
+  animation: none;
+  transform: scale(1.15) !important;
+}
+
+.floating-action-btn:active {
+  transform: scale(0.95) !important;
+}
+
+.floating-action-btn:hover .floating-icon {
+  animation: rotateIcon 0.3s ease-in-out;
+}
+
+.floating-action-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+}
+
+.floating-action-btn:active::before {
+  animation: ripple 0.6s ease-out;
+  width: 100%;
+  height: 100%;
+}
+
+/* Pulso sutil para llamar la atención */
+@keyframes subtlePulse {
+  0%, 100% {
+    box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+  }
+}
+
+.floating-action-btn {
+  animation: floatBounce 3s ease-in-out infinite, subtlePulse 2s ease-in-out infinite;
+  animation-delay: 2s, 1s;
+}
+
+.floating-action-btn:hover {
+  animation: none;
+}
+
+/* Estilos responsive adicionales */
+@media (max-width: 640px) {
+  /* Mejorar el espaciado en móviles */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Ajustar tamaños de texto en móviles */
+  h1 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+  
+  h2 {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+  
+  /* Mejorar la legibilidad de las tablas en móviles */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Ajustar el padding de las cards en móviles */
+  .card-mobile {
+    padding: 1rem;
+  }
+  
+  /* Mejorar el espaciado de los botones en móviles */
+  .button-mobile {
+    min-height: 2.5rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  /* Ajustar el tamaño del modal en móviles */
+  .modal-mobile {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+  }
+  
+  /* Mejorar la navegación en móviles */
+  .nav-mobile {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .nav-mobile a {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Mejorar la experiencia táctil en dispositivos móviles */
+@media (hover: none) and (pointer: coarse) {
+  /* Aumentar el área táctil de los botones */
+  button, 
+  [role="button"],
+  .button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Mejorar el espaciado para elementos interactivos */
+  .interactive {
+    padding: 0.75rem;
+  }
+  
+  /* Ajustar el tamaño de los iconos para mejor usabilidad táctil */
+  .icon-touch {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+/* Optimizaciones para pantallas pequeñas */
+@media (max-width: 480px) {
+  /* Reducir el espaciado en pantallas muy pequeñas */
+  .space-compact {
+    gap: 0.5rem;
+  }
+  
+  /* Ajustar el grid para pantallas muy pequeñas */
+  .grid-compact {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  /* Mejorar la legibilidad del texto en pantallas pequeñas */
+  .text-compact {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+}
+
 /* Estilos personalizados para selectores desplegables */
 select {
   scrollbar-width: none !important;
@@ -236,4 +639,235 @@ select option {
 
 .scrollbar-none::-webkit-scrollbar {
   display: none !important;
+}
+
+/* Estilos para el botón de tema */
+.theme-toggle {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.theme-toggle:hover {
+  background-color: hsl(var(--accent));
+  transform: scale(1.05);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background-color: hsl(var(--accent-foreground) / 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease-out, height 0.3s ease-out;
+}
+
+.theme-toggle:active::before {
+  width: 100%;
+  height: 100%;
+}
+
+/* Transiciones suaves para el cambio de tema */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Mejoras para el modo oscuro */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Animación de entrada para el botón de tema */
+@keyframes themeToggleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.theme-toggle {
+  animation: themeToggleIn 0.4s ease-out;
+}
+
+/* Animaciones para notificaciones */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+.animate-in {
+  animation: slideInFromRight 0.3s ease-out forwards;
+}
+
+.slide-in-from-right-2 {
+  animation: slideInFromRight 0.3s ease-out forwards;
+}
+
+/* Mejoras para el modo oscuro en componentes específicos */
+.dark .theme-toggle:hover {
+  background-color: hsl(var(--accent));
+}
+
+.dark .theme-toggle::before {
+  background-color: hsl(var(--accent-foreground) / 0.2);
+}
+
+/* Estilos para evitar problemas de superposición en tabs */
+[data-slot="tabs"] {
+  position: relative;
+  z-index: 1;
+}
+
+[data-slot="tabs-list"] {
+  position: relative;
+  z-index: 2;
+  background-color: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
+}
+
+[data-slot="tabs-content"] {
+  position: relative;
+  z-index: 1;
+  min-height: 200px;
+  background-color: hsl(var(--background));
+  margin-top: 8px;
+}
+
+/* Asegurar que el contenido de tabs tenga altura mínima en estados vacíos */
+[data-slot="tabs-content"]:empty {
+  min-height: 300px;
+}
+
+/* Estilos específicos para estados vacíos en tabs */
+[data-slot="tabs-content"] .empty-state {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: hsl(var(--background));
+}
+
+/* Mejorar la separación visual entre tabs y contenido */
+[data-slot="tabs-list"] + [data-slot="tabs-content"] {
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+/* Asegurar que las cards dentro de tabs tengan el z-index correcto */
+[data-slot="tabs-content"] .card {
+  position: relative;
+  z-index: 1;
+}
+
+/* Prevenir superposición en modo oscuro */
+.dark [data-slot="tabs-list"] {
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--border));
+}
+
+.dark [data-slot="tabs-content"] {
+  background-color: hsl(var(--background));
+}
+
+/* Estilos específicos para cuando no hay contenido */
+.tabs-empty-content {
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+/* Mejorar alineación de botones en el header */
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Asegurar que el logo esté bien alineado */
+.logo-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* Mejorar la transición del logo al cambiar tema */
+.logo-transition {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Asegurar que los botones del header estén perfectamente alineados */
+.theme-toggle,
+.menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+}
+
+/* Cambiar modo oscuro a gris oscuro en lugar de negro absoluto */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  background-color: #1a1a1a;
+  color: hsl(var(--foreground));
+}
+
+.dark [data-slot="tabs-list"] {
+  background-color: #2a2a2a;
+  border-color: #404040;
+}
+
+.dark [data-slot="tabs-content"] {
+  background-color: #1a1a1a;
+}
+
+.dark .tabs-empty-content {
+  background-color: #1a1a1a;
+  border-color: #404040;
+}
+
+.dark [data-slot="tabs-content"] .empty-state {
+  background-color: #1a1a1a;
 }

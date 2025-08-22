@@ -8,16 +8,22 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Toast, useToast } from "@/components/ui/toast"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { formatCurrency, formatDate, cleanDuplicateData } from "@/lib/utils"
+import { validarCamposObligatorios, validarMonto, validarFecha } from "@/lib/validations"
 import type { Deuda, PagoDeuda } from "@/app/types/types"
 
 export default function DeudasPage() {
+  const { toast, showToast, hideToast } = useToast()
   const [deudas, setDeudas] = useState<Deuda[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isPagoDialogOpen, setIsPagoDialogOpen] = useState(false)
   const [isPagoParcialDialogOpen, setIsPagoParcialDialogOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [deudaSeleccionada, setDeudaSeleccionada] = useState<Deuda | null>(null)
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [deudaAEliminar, setDeudaAEliminar] = useState<Deuda | null>(null)
   const [montoPago, setMontoPago] = useState("")
   const [nuevaDeuda, setNuevaDeuda] = useState({
     descripcion: "",
@@ -52,9 +58,33 @@ export default function DeudasPage() {
   }, [])
 
   const guardarDeuda = () => {
-    if (!nuevaDeuda.descripcion || !nuevaDeuda.monto || !nuevaDeuda.persona) {
-      alert("Por favor, completa todos los campos obligatorios")
+    // Validar campos obligatorios
+    const validacionCampos = validarCamposObligatorios({
+      descripcion: nuevaDeuda.descripcion,
+      monto: nuevaDeuda.monto,
+      persona: nuevaDeuda.persona
+    })
+
+    if (!validacionCampos.esValido) {
+      const camposFaltantes = validacionCampos.camposFaltantes.join(", ")
+      showToast(`Por favor, completa los campos: ${camposFaltantes}`, "error")
       return
+    }
+
+    // Validar monto
+    const validacionMonto = validarMonto(nuevaDeuda.monto)
+    if (!validacionMonto.esValido) {
+      showToast(validacionMonto.mensaje, "error")
+      return
+    }
+
+    // Validar fecha si se proporcionó
+    if (nuevaDeuda.fechaVencimiento) {
+      const validacionFecha = validarFecha(nuevaDeuda.fechaVencimiento)
+      if (!validacionFecha.esValido) {
+        showToast(validacionFecha.mensaje, "error")
+        return
+      }
     }
 
     if (isEditMode && deudaSeleccionada) {
@@ -63,7 +93,7 @@ export default function DeudasPage() {
           return {
             ...deuda,
             descripcion: nuevaDeuda.descripcion,
-            monto: parseFloat(nuevaDeuda.monto),
+            monto: validacionMonto.valor!,
             tipo: nuevaDeuda.tipo as 'porCobrar' | 'porPagar',
             persona: nuevaDeuda.persona,
             fecha: nuevaDeuda.fecha,
@@ -79,7 +109,7 @@ export default function DeudasPage() {
       const deuda: Deuda = {
         id: Math.max(...deudas.map(d => d.id), 0) + 1,
         descripcion: nuevaDeuda.descripcion,
-        monto: parseFloat(nuevaDeuda.monto),
+        monto: validacionMonto.valor!,
         montoPagado: 0,
         tipo: nuevaDeuda.tipo as 'porCobrar' | 'porPagar',
         persona: nuevaDeuda.persona,
@@ -107,6 +137,10 @@ export default function DeudasPage() {
     setIsDialogOpen(false)
     setIsEditMode(false)
     setDeudaSeleccionada(null)
+    
+    // Mostrar mensaje de éxito
+    const mensaje = isEditMode ? "Deuda actualizada con éxito ✅" : "Deuda agregada con éxito ✅"
+    showToast(mensaje, "success")
   }
 
   const registrarPago = (monto: number) => {
@@ -114,13 +148,13 @@ export default function DeudasPage() {
 
     const montoPagoNum = monto
     if (isNaN(montoPagoNum) || montoPagoNum <= 0) {
-      alert("Por favor, ingresa un monto válido")
+      showToast("Por favor, ingresa un monto válido", "error")
       return
     }
 
     const montoPendiente = deudaSeleccionada.monto - deudaSeleccionada.montoPagado
     if (montoPagoNum > montoPendiente) {
-      alert(`No puedes pagar más de ${formatCurrency(montoPendiente)} que es el monto pendiente`)
+      showToast(`No puedes pagar más de ${formatCurrency(montoPendiente)} que es el monto pendiente`, "error")
       return
     }
 
@@ -152,6 +186,13 @@ export default function DeudasPage() {
     setDeudaSeleccionada(null)
     setIsPagoDialogOpen(false)
     setIsPagoParcialDialogOpen(false)
+    
+    // Mostrar mensaje de éxito
+    const estado = nuevoMontoPagado >= deudaSeleccionada.monto ? 'pagada' : 'parcial'
+    const mensaje = estado === 'pagada' 
+      ? `Deuda "${deudaSeleccionada.descripcion}" pagada completamente ✅`
+      : `Pago de ${formatCurrency(montoPagoNum)} registrado con éxito ✅`
+    showToast(mensaje, "success")
   }
 
   const registrarPagoTotal = () => {
@@ -180,24 +221,35 @@ export default function DeudasPage() {
     setIsDialogOpen(true)
   }
 
-  const eliminarDeuda = (id: number) => {
-    if (confirm("¿Estás seguro de que deseas eliminar esta deuda?")) {
-      const nuevasDeudas = deudas.filter(d => d.id !== id)
-      setDeudas(nuevasDeudas)
-      localStorage.setItem('deudas', JSON.stringify(nuevasDeudas))
-    }
+  const abrirConfirmacionEliminar = (deuda: Deuda) => {
+    setDeudaAEliminar(deuda)
+    setIsConfirmDialogOpen(true)
+  }
+
+  const eliminarDeuda = () => {
+    if (!deudaAEliminar) return
+
+    const nuevasDeudas = deudas.filter(d => d.id !== deudaAEliminar.id)
+    setDeudas(nuevasDeudas)
+    localStorage.setItem('deudas', JSON.stringify(nuevasDeudas))
+    
+    // Mostrar mensaje de éxito
+    showToast("Deuda eliminada con éxito ✅", "success")
+    
+    // Limpiar estado
+    setDeudaAEliminar(null)
   }
 
   const deudasPendientes = deudas.filter(d => d.estado !== 'pagada')
   const deudasPagadas = deudas.filter(d => d.estado === 'pagada')
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold tracking-tight">Deudas</h2>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Deudas</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="w-full sm:w-auto">
               Agregar Deuda
             </Button>
           </DialogTrigger>
@@ -284,32 +336,38 @@ export default function DeudasPage() {
       </div>
 
       <Tabs defaultValue="pendientes" className="space-y-4">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="pendientes">Pendientes</TabsTrigger>
           <TabsTrigger value="pagadas">Pagadas</TabsTrigger>
         </TabsList>
-        <TabsContent value="pendientes">
+        <TabsContent value="pendientes" className="min-h-[300px]">
           <Card>
             <CardHeader>
               <CardTitle>Deudas Pendientes</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Descripción</TableHead>
-                      <TableHead>Persona</TableHead>
-                      <TableHead>Monto Total</TableHead>
-                      <TableHead>Pagado</TableHead>
-                      <TableHead>Pendiente</TableHead>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead>Vencimiento</TableHead>
-                      <TableHead>Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {deudasPendientes.map((deuda) => (
+              {deudasPendientes.length === 0 ? (
+                <div className="text-center text-muted-foreground py-12">
+                  <p className="text-sm sm:text-base">No hay deudas pendientes</p>
+                  <p className="text-xs sm:text-sm mt-2">¡Excelente! Todas tus deudas están pagadas o no tienes deudas registradas</p>
+                </div>
+              ) : (
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Descripción</TableHead>
+                        <TableHead>Persona</TableHead>
+                        <TableHead>Monto Total</TableHead>
+                        <TableHead>Pagado</TableHead>
+                        <TableHead>Pendiente</TableHead>
+                        <TableHead>Fecha</TableHead>
+                        <TableHead>Vencimiento</TableHead>
+                        <TableHead>Acciones</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {deudasPendientes.map((deuda) => (
                       <TableRow key={deuda.id}>
                         <TableCell>{deuda.descripcion}</TableCell>
                         <TableCell>{deuda.persona}</TableCell>
@@ -339,39 +397,46 @@ export default function DeudasPage() {
                             <Button
                               size="sm"
                               variant="destructive"
-                              onClick={() => eliminarDeuda(deuda.id)}
+                              onClick={() => abrirConfirmacionEliminar(deuda)}
                             >
                               Eliminar
                             </Button>
                           </div>
                         </TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="pagadas">
+        <TabsContent value="pagadas" className="min-h-[300px]">
           <Card>
             <CardHeader>
               <CardTitle>Deudas Pagadas</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Descripción</TableHead>
-                      <TableHead>Persona</TableHead>
-                      <TableHead>Monto Total</TableHead>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead>Historial de Pagos</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {deudasPagadas.map((deuda) => (
+              {deudasPagadas.length === 0 ? (
+                <div className="text-center text-muted-foreground py-12">
+                  <p className="text-sm sm:text-base">No hay deudas pagadas aún</p>
+                  <p className="text-xs sm:text-sm mt-2">Aquí aparecerán las deudas que hayas marcado como pagadas</p>
+                </div>
+              ) : (
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Descripción</TableHead>
+                        <TableHead>Persona</TableHead>
+                        <TableHead>Monto Total</TableHead>
+                        <TableHead>Fecha</TableHead>
+                        <TableHead>Historial de Pagos</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {deudasPagadas.map((deuda) => (
                       <TableRow key={deuda.id}>
                         <TableCell>{deuda.descripcion}</TableCell>
                         <TableCell>{deuda.persona}</TableCell>
@@ -387,10 +452,11 @@ export default function DeudasPage() {
                           </div>
                         </TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -486,6 +552,29 @@ export default function DeudasPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Componente Toast para notificaciones */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={hideToast}
+      />
+
+      {/* Diálogo de confirmación para eliminar deuda */}
+      <ConfirmDialog
+        isOpen={isConfirmDialogOpen}
+        onClose={() => {
+          setIsConfirmDialogOpen(false)
+          setDeudaAEliminar(null)
+        }}
+        onConfirm={eliminarDeuda}
+        title="Confirmar eliminación"
+        message={`¿Estás seguro de que deseas eliminar la deuda "${deudaAEliminar?.descripcion}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="destructive"
+      />
     </div>
   )
 } 

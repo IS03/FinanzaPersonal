@@ -217,15 +217,15 @@ export default function Home() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold tracking-tight">Finly - Resumen Financiero</h2>
-        <div className="flex gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Resumen Financiero</h2>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
           <Select 
             value={selectedMonth === null ? 'year' : selectedMonth.toString()} 
             onValueChange={(v) => setSelectedMonth(v === 'year' ? null : parseInt(v))}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Selecciona mes" />
             </SelectTrigger>
             <SelectContent className="max-h-[100px] scrollbar-hidden">
@@ -241,7 +241,7 @@ export default function Home() {
             value={selectedYear.toString()} 
             onValueChange={(v) => setSelectedYear(parseInt(v))}
           >
-            <SelectTrigger className="w-[120px]">
+            <SelectTrigger className="w-full sm:w-[120px]">
               <SelectValue placeholder="Selecciona año" />
             </SelectTrigger>
             <SelectContent className="max-h-[100px] scrollbar-hidden">
@@ -255,15 +255,15 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {selectedMonth === null ? 'Gastos del Año' : 'Gastos del Mes'}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-xl sm:text-2xl font-bold text-red-600">
               {formatCurrency(stats.totalGastos)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -274,12 +274,12 @@ export default function Home() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {selectedMonth === null ? 'Cuotas Pendientes del Año' : 'Cuotas Pendientes'}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">
+            <div className="text-xl sm:text-2xl font-bold text-orange-600">
               {formatCurrency(cuotasPendientes)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -290,12 +290,12 @@ export default function Home() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {selectedMonth === null ? 'Ingresos del Año' : 'Ingresos del Mes'}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-xl sm:text-2xl font-bold text-green-600">
               {formatCurrency(stats.totalIngresos)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -306,12 +306,12 @@ export default function Home() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {selectedMonth === null ? 'Balance del Año' : 'Balance del Mes'}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${stats.balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <div className={`text-xl sm:text-2xl font-bold ${stats.balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {formatCurrency(stats.balance)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -322,12 +322,12 @@ export default function Home() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {selectedMonth === null ? 'Cuotas Pagadas del Año' : 'Cuotas Pagadas'}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-xl sm:text-2xl font-bold text-blue-600">
               {formatCurrency(cuotasPagadas)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -338,7 +338,7 @@ export default function Home() {
       </div>
 
       <Tabs defaultValue="pendientes" className="space-y-4">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="pendientes">Cuotas Pendientes</TabsTrigger>
           <TabsTrigger value="pagadas">Cuotas Pagadas</TabsTrigger>
         </TabsList>
@@ -346,7 +346,7 @@ export default function Home() {
           {tarjetas.length === 0 ? (
             <Card>
               <CardContent className="pt-6">
-                <p className="text-center text-muted-foreground">
+                <p className="text-center text-muted-foreground text-sm sm:text-base">
                   No hay tarjetas registradas. Ve a la sección &quot;Tarjetas&quot; para agregar tarjetas de crédito.
                 </p>
               </CardContent>
@@ -398,9 +398,9 @@ export default function Home() {
                 return (
                   <Card key={tarjeta.id}>
                     <CardHeader>
-                      <CardTitle className="flex justify-between items-center">
-                        {tarjeta.nombre} - {tarjeta.banco}
-                        <span className="text-lg text-orange-600">
+                      <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <span className="text-sm sm:text-base">{tarjeta.nombre} - {tarjeta.banco}</span>
+                        <span className="text-base sm:text-lg text-orange-600 font-semibold">
                           {formatCurrency(cuotasPendientesTarjeta)}
                         </span>
                       </CardTitle>
@@ -440,9 +440,9 @@ export default function Home() {
                             if (cuotasPendientes.length === 0) return null
 
                             return (
-                              <div key={`gasto-${gasto.id}-${selectedMonth ?? 'year'}-${selectedYear}`} className="flex justify-between items-center text-sm">
-                                <span>{gasto.descripcion}</span>
-                                <span className="text-orange-600">
+                              <div key={`gasto-${gasto.id}-${selectedMonth ?? 'year'}-${selectedYear}`} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 sm:gap-0 text-xs sm:text-sm">
+                                <span className="break-words">{gasto.descripcion}</span>
+                                <span className="text-orange-600 font-medium">
                                   {formatCurrency(cuotasPendientes.reduce((acc, cuota) => acc + cuota.monto, 0))}
                                 </span>
                               </div>
@@ -465,7 +465,7 @@ export default function Home() {
           {tarjetas.length === 0 ? (
             <Card>
               <CardContent className="pt-6">
-                <p className="text-center text-muted-foreground">
+                <p className="text-center text-muted-foreground text-sm sm:text-base">
                   No hay tarjetas registradas. Ve a la sección &quot;Tarjetas&quot; para agregar tarjetas de crédito.
                 </p>
               </CardContent>
@@ -517,9 +517,9 @@ export default function Home() {
                 return (
                   <Card key={tarjeta.id}>
                     <CardHeader>
-                      <CardTitle className="flex justify-between items-center">
-                        {tarjeta.nombre} - {tarjeta.banco}
-                        <span className="text-lg text-blue-600">
+                      <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <span className="text-sm sm:text-base">{tarjeta.nombre} - {tarjeta.banco}</span>
+                        <span className="text-base sm:text-lg text-blue-600 font-semibold">
                           {formatCurrency(cuotasPagadasTarjeta)}
                         </span>
                       </CardTitle>
@@ -559,9 +559,9 @@ export default function Home() {
                             if (cuotasPagadasDelPeriodo.length === 0) return null
 
                             return (
-                              <div key={`gasto-pagado-${gasto.id}-${selectedMonth ?? 'year'}-${selectedYear}`} className="flex justify-between items-center text-sm">
-                                <span>{gasto.descripcion}</span>
-                                <span className="text-blue-600">
+                              <div key={`gasto-pagado-${gasto.id}-${selectedMonth ?? 'year'}-${selectedYear}`} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 sm:gap-0 text-xs sm:text-sm">
+                                <span className="break-words">{gasto.descripcion}</span>
+                                <span className="text-blue-600 font-medium">
                                   {formatCurrency(cuotasPagadasDelPeriodo.reduce((acc, cuota) => acc + cuota.monto, 0))}
                                 </span>
                               </div>

@@ -6,8 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { FilterSelect } from "@/components/ui/filter-select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+
+import { Toast, useToast } from "@/components/ui/toast"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { formatCurrency, formatDate, cleanDuplicateData } from "@/lib/utils"
+import { validarCamposObligatorios, validarMonto } from "@/lib/validations"
 import type { Ingreso } from "@/app/types/types"
 
 const fuentes = [
@@ -19,12 +22,15 @@ const fuentes = [
 ]
 
 export default function IngresosPage() {
+  const { toast, showToast, hideToast } = useToast()
   const [ingresos, setIngresos] = useState<Ingreso[]>([])
   const [descripcion, setDescripcion] = useState("")
   const [monto, setMonto] = useState("")
   const [fuente, setFuente] = useState("")
   const [filtroMes, setFiltroMes] = useState(new Date().getMonth())
   const [filtroFuente, setFiltroFuente] = useState<string>("todas")
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [ingresoAEliminar, setIngresoAEliminar] = useState<Ingreso | null>(null)
 
   useEffect(() => {
     const savedIngresos = JSON.parse(localStorage.getItem('ingresos') || '[]')
@@ -45,15 +51,30 @@ export default function IngresosPage() {
   }, [])
 
   const agregarIngreso = () => {
-    if (!descripcion || !monto || !fuente) {
-      alert("Por favor, completa todos los campos")
+    // Validar campos obligatorios
+    const validacionCampos = validarCamposObligatorios({
+      descripcion,
+      monto,
+      fuente
+    })
+
+    if (!validacionCampos.esValido) {
+      const camposFaltantes = validacionCampos.camposFaltantes.join(", ")
+      showToast(`Por favor, completa los campos: ${camposFaltantes}`, "error")
+      return
+    }
+
+    // Validar monto
+    const validacionMonto = validarMonto(monto)
+    if (!validacionMonto.esValido) {
+      showToast(validacionMonto.mensaje, "error")
       return
     }
 
     const nuevoIngreso: Ingreso = {
-              id: Math.max(...ingresos.map(i => i.id), 0) + 1,
+      id: Math.max(...ingresos.map(i => i.id), 0) + 1,
       descripcion,
-      monto: parseFloat(monto),
+      monto: validacionMonto.valor!,
       fuente,
       fecha: new Date().toISOString()
     }
@@ -65,12 +86,28 @@ export default function IngresosPage() {
     setDescripcion("")
     setMonto("")
     setFuente("")
+    
+    // Mostrar mensaje de éxito
+    showToast("Ingreso agregado con éxito ✅", "success")
   }
 
-  const eliminarIngreso = (id: number) => {
-    const nuevosIngresos = ingresos.filter(ingreso => ingreso.id !== id)
+  const abrirConfirmacionEliminar = (ingreso: Ingreso) => {
+    setIngresoAEliminar(ingreso)
+    setIsConfirmDialogOpen(true)
+  }
+
+  const eliminarIngreso = () => {
+    if (!ingresoAEliminar) return
+
+    const nuevosIngresos = ingresos.filter(ingreso => ingreso.id !== ingresoAEliminar.id)
     setIngresos(nuevosIngresos)
     localStorage.setItem('ingresos', JSON.stringify(nuevosIngresos))
+    
+    // Mostrar mensaje de éxito
+    showToast("Ingreso eliminado con éxito ✅", "success")
+    
+    // Limpiar estado
+    setIngresoAEliminar(null)
   }
 
   const ingresosFiltrados = ingresos.filter(ingreso => {
@@ -184,23 +221,13 @@ export default function IngresosPage() {
                         <TableCell className="capitalize">{ingreso.fuente}</TableCell>
                         <TableCell>{formatDate(ingreso.fecha)}</TableCell>
                         <TableCell>
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant="destructive" size="sm">
-                                Eliminar
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>¿Confirmar eliminación?</DialogTitle>
-                              </DialogHeader>
-                              <div className="flex justify-end space-x-2">
-                                <Button variant="outline" onClick={() => eliminarIngreso(ingreso.id)}>
-                                  Eliminar
-                                </Button>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
+                          <Button 
+                            variant="destructive" 
+                            size="sm"
+                            onClick={() => abrirConfirmacionEliminar(ingreso)}
+                          >
+                            Eliminar
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -211,6 +238,29 @@ export default function IngresosPage() {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Componente Toast para notificaciones */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={hideToast}
+      />
+
+      {/* Diálogo de confirmación para eliminar ingreso */}
+      <ConfirmDialog
+        isOpen={isConfirmDialogOpen}
+        onClose={() => {
+          setIsConfirmDialogOpen(false)
+          setIngresoAEliminar(null)
+        }}
+        onConfirm={eliminarIngreso}
+        title="Confirmar eliminación"
+        message={`¿Estás seguro de que deseas eliminar el ingreso "${ingresoAEliminar?.descripcion}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="destructive"
+      />
     </div>
   )
 } 
