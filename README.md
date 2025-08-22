@@ -1,6 +1,6 @@
 <div align="center">
 
-# 💰 Finly - Control de Finanzas Personales
+# 💰 Findly - Control de Finanzas Personales
 
 ### Una aplicación web moderna y completa para gestionar tus finanzas personales de manera inteligente
 
@@ -17,9 +17,9 @@
 
 ---
 
-## 🎯 ¿Qué es Finly?
+## 🎯 ¿Qué es Findly?
 
-**Finly** es una aplicación web moderna diseñada para ayudarte a tomar el control total de tus finanzas personales. Con una interfaz intuitiva y funcionalidades avanzadas, te permite gestionar gastos, ingresos, tarjetas de crédito, cuotas y deudas de manera eficiente.
+**Findly** es una aplicación web moderna diseñada para ayudarte a tomar el control total de tus finanzas personales. Con una interfaz intuitiva y funcionalidades avanzadas, te permite gestionar gastos, ingresos, tarjetas de crédito, cuotas y deudas de manera eficiente.
 
 ### ✨ Características Destacadas
 
@@ -113,8 +113,8 @@ graph TD
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/tu-usuario/finly.git
-cd finly
+git clone https://github.com/tu-usuario/findly.git
+cd findly
 
 # 2. Instalar dependencias
 npm install
