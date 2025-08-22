@@ -111,7 +111,8 @@ export default function Home() {
           const fechaCuota = new Date(fechaGasto)
           
           // Si el gasto fue después del día de cierre, la primera cuota vence en el siguiente mes
-          if (fechaGasto.getDate() > tarjeta.diaCierre) {
+          const cierre = tarjeta.diaCierre ?? 31 // 31 = no dispara el cambio de mes si falta
+          if (fechaGasto.getDate() > cierre) {
             fechaCuota.setMonth(fechaCuota.getMonth() + 1)
           }
           
@@ -119,7 +120,8 @@ export default function Home() {
           fechaCuota.setMonth(fechaCuota.getMonth() + i)
           
           // Establecemos la fecha de vencimiento
-          fechaCuota.setDate(tarjeta.diaVencimiento)
+          const vencimiento = tarjeta.diaVencimiento ?? 10 // 10 = día 10 si no está definido
+          fechaCuota.setDate(vencimiento)
           
           return {
             fecha: fechaCuota,
@@ -156,7 +158,8 @@ export default function Home() {
           const fechaCuota = new Date(fechaGasto)
           
           // Si el gasto fue después del día de cierre, la primera cuota vence en el siguiente mes
-          if (fechaGasto.getDate() > tarjeta.diaCierre) {
+          const cierre = tarjeta.diaCierre ?? 31 // 31 = no dispara el cambio de mes si falta
+          if (fechaGasto.getDate() > cierre) {
             fechaCuota.setMonth(fechaCuota.getMonth() + 1)
           }
           
@@ -164,7 +167,8 @@ export default function Home() {
           fechaCuota.setMonth(fechaCuota.getMonth() + i)
           
           // Establecemos la fecha de vencimiento
-          fechaCuota.setDate(tarjeta.diaVencimiento)
+          const vencimiento = tarjeta.diaVencimiento ?? 10 // 10 = día 10 si no está definido
+          fechaCuota.setDate(vencimiento)
           
           return {
             fecha: fechaCuota,
@@ -366,7 +370,8 @@ export default function Home() {
                       const fechaCuota = new Date(fechaGasto)
                       
                       // Si el gasto fue después del día de cierre, la primera cuota vence en el siguiente mes
-                      if (fechaGasto.getDate() > tarjeta.diaCierre) {
+                      const cierre = tarjeta.diaCierre ?? 31 // 31 = no dispara el cambio de mes si falta
+                      if (fechaGasto.getDate() > cierre) {
                         fechaCuota.setMonth(fechaCuota.getMonth() + 1)
                       }
                       
@@ -374,7 +379,8 @@ export default function Home() {
                       fechaCuota.setMonth(fechaCuota.getMonth() + i)
                       
                       // Establecemos la fecha de vencimiento
-                      fechaCuota.setDate(tarjeta.diaVencimiento)
+                      const vencimiento = tarjeta.diaVencimiento ?? 10 // 10 = día 10 si no está definido
+                      fechaCuota.setDate(vencimiento)
                       
                       return {
                         fecha: fechaCuota,
@@ -416,7 +422,8 @@ export default function Home() {
                               const fechaCuota = new Date(fechaGasto)
                               
                               // Si el gasto fue después del día de cierre, la primera cuota vence en el siguiente mes
-                              if (fechaGasto.getDate() > tarjeta.diaCierre) {
+                              const cierre = tarjeta.diaCierre ?? 31 // 31 = no dispara el cambio de mes si falta
+                              if (fechaGasto.getDate() > cierre) {
                                 fechaCuota.setMonth(fechaCuota.getMonth() + 1)
                               }
                               
@@ -424,7 +431,8 @@ export default function Home() {
                               fechaCuota.setMonth(fechaCuota.getMonth() + i)
                               
                               // Establecemos la fecha de vencimiento
-                              fechaCuota.setDate(tarjeta.diaVencimiento)
+                              const vencimiento = tarjeta.diaVencimiento ?? 10 // 10 = día 10 si no está definido
+                              fechaCuota.setDate(vencimiento)
                               
                               return {
                                 fecha: fechaCuota,
@@ -485,7 +493,8 @@ export default function Home() {
                       const fechaCuota = new Date(fechaGasto)
                       
                       // Si el gasto fue después del día de cierre, la primera cuota vence en el siguiente mes
-                      if (fechaGasto.getDate() > tarjeta.diaCierre) {
+                      const cierre = tarjeta.diaCierre ?? 31 // 31 = no dispara el cambio de mes si falta
+                      if (fechaGasto.getDate() > cierre) {
                         fechaCuota.setMonth(fechaCuota.getMonth() + 1)
                       }
                       
@@ -493,7 +502,8 @@ export default function Home() {
                       fechaCuota.setMonth(fechaCuota.getMonth() + i)
                       
                       // Establecemos la fecha de vencimiento
-                      fechaCuota.setDate(tarjeta.diaVencimiento)
+                      const vencimiento = tarjeta.diaVencimiento ?? 10 // 10 = día 10 si no está definido
+                      fechaCuota.setDate(vencimiento)
                       
                       return {
                         fecha: fechaCuota,
@@ -535,7 +545,8 @@ export default function Home() {
                               const fechaCuota = new Date(fechaGasto)
                               
                               // Si el gasto fue después del día de cierre, la primera cuota vence en el siguiente mes
-                              if (fechaGasto.getDate() > tarjeta.diaCierre) {
+                              const cierre = tarjeta.diaCierre ?? 31 // 31 = no dispara el cambio de mes si falta
+                              if (fechaGasto.getDate() > cierre) {
                                 fechaCuota.setMonth(fechaCuota.getMonth() + 1)
                               }
                               
@@ -543,7 +554,8 @@ export default function Home() {
                               fechaCuota.setMonth(fechaCuota.getMonth() + i)
                               
                               // Establecemos la fecha de vencimiento
-                              fechaCuota.setDate(tarjeta.diaVencimiento)
+                              const vencimiento = tarjeta.diaVencimiento ?? 10 // 10 = día 10 si no está definido
+                              fechaCuota.setDate(vencimiento)
                               
                               return {
                                 fecha: fechaCuota,
